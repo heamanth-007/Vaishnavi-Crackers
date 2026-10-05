@@ -193,6 +193,24 @@ export const SettingsApi = {
     }),
 };
 
+// e-Way Bills API
+export const EWayBillsApi = {
+  getAll: (search?: string) =>
+    request<any[]>(`/ewaybills${search ? `?search=${encodeURIComponent(search)}` : ''}`),
+  getById: (id: string) => request<any>(`/ewaybills/${id}`),
+  create: (data: any) =>
+    request<any>('/ewaybills', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  update: (id: string, data: any) =>
+    request<any>(`/ewaybills/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  delete: (id: string) => request<any>(`/ewaybills/${id}`, { method: 'DELETE' }),
+};
+
 // Health Check API
 export const HealthApi = {
   check: () => request<{ status: string; message: string; port?: number | string; timestamp: string }>('/health'),

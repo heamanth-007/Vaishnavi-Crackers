@@ -170,7 +170,6 @@ export const generateBillHtml = (bill: BillPrintData, copiesCount: number = 1): 
   const spacerMinHeight = Math.max(80, 520 - products.length * 26);
 
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  const ganeshaImgUrl = `${origin}/ganesha.jpg`;
   const brandImgUrl = storeSettings.logoUrl || `${origin}/logo.png`;
 
   const copyLabels = ['ORIGINAL', 'DUPLICATE', 'TRIPLICATE', 'EXTRA COPY'];
