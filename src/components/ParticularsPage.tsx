@@ -70,7 +70,7 @@ interface ParticularsPageProps {
   onEditSuccess?: () => void;
 }
 
-const DRAFT_BILL_STORAGE_KEY = 'apsara_draft_bill';
+const DRAFT_BILL_STORAGE_KEY = 'vaishnavi_draft_bill';
 
 interface DraftBillState {
   customerName?: string;
@@ -87,7 +87,7 @@ interface DraftBillState {
 
 const getSavedDraft = (): DraftBillState => {
   try {
-    const raw = localStorage.getItem(DRAFT_BILL_STORAGE_KEY);
+    const raw = localStorage.getItem(DRAFT_BILL_STORAGE_KEY) || localStorage.getItem('apsara_draft_bill');
     if (raw) {
       return JSON.parse(raw);
     }
@@ -113,7 +113,7 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
   const [customerPhone, setCustomerPhone] = useState<string>(() => draft.customerPhone || '');
   const [customerAddress, setCustomerAddress] = useState<string>(() => draft.customerAddress || '');
   const [company, setCompany] = useState<string>(() => {
-    return storeSettings.companyName || 'Apsara Crackers';
+    return storeSettings.companyName || 'Vaishnavi Crackers';
   });
   const [billNo, setBillNo] = useState<string>(() => draft.billNo || '');
   const [billDate, setBillDate] = useState<string>(() => {
@@ -143,7 +143,7 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
       setCustomerName(editBillData.customerName || '');
       setCustomerPhone(editBillData.customerPhone || '');
       setCustomerAddress(editBillData.customerAddress || '');
-      setCompany(editBillData.companyName || storeSettings.companyName || 'Apsara Crackers');
+      setCompany(editBillData.companyName || storeSettings.companyName || 'Vaishnavi Crackers');
       setBillNo(String(editBillData.billNo || ''));
       setBillDate(editBillData.date || new Date().toLocaleDateString('en-GB').replace(/\//g, '-'));
       setDiscount(String(editBillData.discount ?? '0'));
@@ -195,7 +195,7 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
     const handleSettingsUpdate = () => {
       const updated = getStoredSettings();
       setStoreSettings(updated);
-      setCompany(updated.companyName || 'Apsara Crackers');
+      setCompany(updated.companyName || 'Vaishnavi Crackers');
       if (updated.enableTax && (!tax || tax === '0')) {
         setTax(updated.defaultTaxRate || '0');
       } else if (!updated.enableTax) {
@@ -203,8 +203,10 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
       }
     };
     window.addEventListener('apsara_settings_updated', handleSettingsUpdate);
+    window.addEventListener('vaishnavi_settings_updated', handleSettingsUpdate);
     return () => {
       window.removeEventListener('apsara_settings_updated', handleSettingsUpdate);
+      window.removeEventListener('vaishnavi_settings_updated', handleSettingsUpdate);
     };
   }, [tax]);
 
@@ -532,6 +534,7 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
         setPacking('0');
         setTax(storeSettings.enableTax ? (storeSettings.defaultTaxRate || '0') : '0');
         localStorage.removeItem(DRAFT_BILL_STORAGE_KEY);
+        localStorage.removeItem('vaishnavi_active_customer');
         localStorage.removeItem('apsara_active_customer');
         ['varun_draft_bill', 'dheeksha_draft_bill', 'varun_active_customer', 'dheeksha_active_customer'].forEach(k => localStorage.removeItem(k));
         fetchNextBillNo();
@@ -561,6 +564,7 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
     setPacking('0');
     setTax(storeSettings.enableTax ? (storeSettings.defaultTaxRate || '0') : '0');
     localStorage.removeItem(DRAFT_BILL_STORAGE_KEY);
+    localStorage.removeItem('vaishnavi_active_customer');
     localStorage.removeItem('apsara_active_customer');
     ['varun_draft_bill', 'dheeksha_draft_bill', 'varun_active_customer', 'dheeksha_active_customer'].forEach(k => localStorage.removeItem(k));
     fetchNextBillNo();

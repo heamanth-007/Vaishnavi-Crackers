@@ -13,7 +13,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
-import defaultApsaraLogo from '../assets/logo.png';
+import defaultBrandLogo from '../assets/logo.png';
 import { AuthApi, SettingsApi } from '../services/api';
 import { getStoredSettings, DEFAULT_COMPANY_SETTINGS, type CompanySettings } from './SettingsPage';
 
@@ -35,12 +35,13 @@ export const LoginPage: FC<LoginPageProps> = ({ onLoginSuccess }) => {
       .then((res) => {
         const data = (res && typeof res === 'object' && 'data' in res && res.data) ? res.data : res;
         if (data && typeof data === 'object') {
-          const compName = (!data.companyName || data.companyName.toLowerCase().includes('varun') || data.companyName.toLowerCase().includes('dheeksha'))
-            ? 'Apsara Crackers'
+          const compName = (!data.companyName || data.companyName.toLowerCase().includes('varun') || data.companyName.toLowerCase().includes('dheeksha') || data.companyName.toLowerCase().includes('apsara'))
+            ? 'Vaishnavi Crackers'
             : (data.companyName ?? DEFAULT_COMPANY_SETTINGS.companyName);
 
           const remoteSettings = { ...DEFAULT_COMPANY_SETTINGS, ...data, companyName: compName };
           setSettings(remoteSettings);
+          localStorage.setItem('vaishnavi_app_settings', JSON.stringify(remoteSettings));
           localStorage.setItem('apsara_app_settings', JSON.stringify(remoteSettings));
         }
       })
@@ -52,8 +53,10 @@ export const LoginPage: FC<LoginPageProps> = ({ onLoginSuccess }) => {
       setSettings(getStoredSettings());
     };
     window.addEventListener('apsara_settings_updated', handleUpdate);
+    window.addEventListener('vaishnavi_settings_updated', handleUpdate);
     return () => {
       window.removeEventListener('apsara_settings_updated', handleUpdate);
+      window.removeEventListener('vaishnavi_settings_updated', handleUpdate);
     };
   }, []);
 
@@ -74,7 +77,9 @@ export const LoginPage: FC<LoginPageProps> = ({ onLoginSuccess }) => {
       });
 
       if (res && res.token) {
+        localStorage.setItem('vaishnavi_auth_token', res.token);
         localStorage.setItem('apsara_auth_token', res.token);
+        localStorage.setItem('vaishnavi_auth_user', JSON.stringify(res.user || { username: username.trim(), role: 'admin' }));
         localStorage.setItem('apsara_auth_user', JSON.stringify(res.user || { username: username.trim(), role: 'admin' }));
         onLoginSuccess(res.user || { username: username.trim(), role: 'admin' });
       }
@@ -83,10 +88,12 @@ export const LoginPage: FC<LoginPageProps> = ({ onLoginSuccess }) => {
       // Fallback offline verification if server is unreachable or initial run
       if (
         (username.trim().toLowerCase() === 'admin' && (password === 'admin123' || password === 'admin')) ||
-        (password === 'admin123' || password === 'apsara123')
+        (password === 'admin123' || password === 'apsara123' || password === 'vaishnavi123')
       ) {
         const fallbackUser = { username: username.trim().toLowerCase(), role: 'admin' };
+        localStorage.setItem('vaishnavi_auth_token', 'local-admin-token');
         localStorage.setItem('apsara_auth_token', 'local-admin-token');
+        localStorage.setItem('vaishnavi_auth_user', JSON.stringify(fallbackUser));
         localStorage.setItem('apsara_auth_user', JSON.stringify(fallbackUser));
         onLoginSuccess(fallbackUser);
       } else {
@@ -129,8 +136,8 @@ export const LoginPage: FC<LoginPageProps> = ({ onLoginSuccess }) => {
         {/* Top Logo / Festive Shield Badge */}
         <Box
           component="img"
-          src={settings.logoUrl || defaultApsaraLogo}
-          alt="Apsara Crackers Logo"
+          src={settings.logoUrl || defaultBrandLogo}
+          alt="Vaishnavi Crackers Logo"
           sx={{
             maxHeight: 70,
             maxWidth: 200,
@@ -169,7 +176,7 @@ export const LoginPage: FC<LoginPageProps> = ({ onLoginSuccess }) => {
             mb: 3.5,
           }}
         >
-          {settings.companyName || 'Apsara Crackers'} - Billing & Management System
+          {settings.companyName || 'Vaishnavi Crackers'} - Billing & Management System
         </Typography>
 
         {/* Error Alert if any */}
@@ -377,7 +384,7 @@ export const LoginPage: FC<LoginPageProps> = ({ onLoginSuccess }) => {
           }}
         >
           <Typography sx={{ fontSize: '12px', color: '#B45309', fontWeight: 600 }}>
-            {settings.companyName || 'Apsara Crackers'} {settings.tagline ? `• ${settings.tagline}` : ''}
+            {settings.companyName || 'Vaishnavi Crackers'} {settings.tagline ? `• ${settings.tagline}` : ''}
           </Typography>
         </Box>
       </Paper>

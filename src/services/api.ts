@@ -1,5 +1,5 @@
 /**
- * Centralized API Service for Apsara Crackers
+ * Centralized API Service for Vaishnavi Crackers
  * Automatically resolves and normalizes backend base URL from Vite environment variables.
  */
 
@@ -20,7 +20,7 @@ const getApiBaseUrl = (): string => {
     return sanitized.endsWith('/api') ? sanitized : `${sanitized}/api`;
   }
 
-  // If in browser on production domain (e.g. apsara-crackers.gemshine.tech)
+  // If in browser on production domain (e.g. vaishnavi-crackers.gemshine.tech)
   if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
     return '/api';
   }
@@ -46,7 +46,7 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 
   // Retrieve auth token if stored
   const token = typeof window !== 'undefined'
-    ? localStorage.getItem('apsara_auth_token')
+    ? (localStorage.getItem('vaishnavi_auth_token') || localStorage.getItem('apsara_auth_token'))
     : null;
 
   const headers: Record<string, string> = {

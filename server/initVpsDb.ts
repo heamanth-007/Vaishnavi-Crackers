@@ -26,7 +26,7 @@ const hashPassword = (password: string): string => {
 
 export const initVpsDatabase = async (): Promise<void> => {
   console.log('=============================================');
-  console.log('🚀 Initializing Apsara Crackers Database on VPS');
+  console.log('🚀 Initializing Vaishnavi Crackers Database on VPS');
   console.log('=============================================');
 
   try {
@@ -78,29 +78,29 @@ export const initVpsDatabase = async (): Promise<void> => {
       console.log(`\n👤 Admin user already exists: ${existingAdmin.username}`);
     }
 
-    // 2. Seed Default Company (Apsara Crackers) if none exists
+    // 2. Seed Default Company (Vaishnavi Crackers) if none exists
     const companyCount = await Company.countDocuments();
     if (companyCount === 0) {
       await Company.create({
         slNo: '01',
-        name: 'Apsara Crackers',
-        avatarLetter: 'A',
+        name: 'Vaishnavi Crackers',
+        avatarLetter: 'V',
         avatarBg: '#DBEAFE',
         avatarColor: '#0B4DB7',
         address: 'Sivakasi, Tamil Nadu - 626123',
         gstin: '33AAAAA0000A1Z5',
       });
-      console.log(`\n🏢 Default Company Created: Apsara Crackers`);
+      console.log(`\n🏢 Default Company Created: Vaishnavi Crackers`);
     }
 
     // 3. Seed Default Settings if none exists
     const settingsCount = await Settings.countDocuments();
     if (settingsCount === 0) {
       await Settings.create({
-        companyName: 'Apsara Crackers',
+        companyName: 'Vaishnavi Crackers',
         address: 'Sivakasi, Tamil Nadu - 626123',
         phone: '9876543210',
-        email: 'info@apsaracrackers.com',
+        email: 'info@vaishnavicrackers.com',
         gstin: '33AAAAA0000A1Z5',
         theme: 'dark',
       });
@@ -108,7 +108,7 @@ export const initVpsDatabase = async (): Promise<void> => {
     }
 
     console.log('\n=============================================');
-    console.log('✅ Apsara Crackers VPS Database initialized successfully!');
+    console.log('✅ Vaishnavi Crackers VPS Database initialized successfully!');
     console.log(`   Database Name : ${mongoose.connection.name}`);
     console.log(`   Admin Login   : ${defaultUsername} / ${defaultPassword}`);
     console.log('=============================================\n');

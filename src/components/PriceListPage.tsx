@@ -138,7 +138,7 @@ export const PriceListPage: FC = () => {
   // Uploaded Documents List (Persisted in localStorage)
   const [uploadedDocs, setUploadedDocs] = useState<UploadedPriceDoc[]>(() => {
     try {
-      const saved = localStorage.getItem('apsara_uploaded_price_docs') || localStorage.getItem('varun_uploaded_price_docs') || localStorage.getItem('dheeksha_uploaded_price_docs');
+      const saved = localStorage.getItem('vaishnavi_uploaded_price_docs') || localStorage.getItem('apsara_uploaded_price_docs') || localStorage.getItem('varun_uploaded_price_docs') || localStorage.getItem('dheeksha_uploaded_price_docs');
       return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
@@ -161,6 +161,7 @@ export const PriceListPage: FC = () => {
   const saveDocsList = (docs: UploadedPriceDoc[]) => {
     setUploadedDocs(docs);
     try {
+      localStorage.setItem('vaishnavi_uploaded_price_docs', JSON.stringify(docs));
       localStorage.setItem('apsara_uploaded_price_docs', JSON.stringify(docs));
       localStorage.removeItem('varun_uploaded_price_docs');
       localStorage.removeItem('dheeksha_uploaded_price_docs');
@@ -285,7 +286,7 @@ export const PriceListPage: FC = () => {
       .replace(/\(\s*\)/g, ' ')
       .replace(/\[\s*\]/g, ' ')
       .replace(/\{\s*\}/g, ' ')
-      .replace(/[\/\\|:_\-~*]+/g, ' ')
+      .replace(/[/\\|:_\-~*]+/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
 
@@ -360,7 +361,7 @@ export const PriceListPage: FC = () => {
       let slNo = nextSlNo;
       let startIndex = 0;
 
-      const firstMatch = tokens[0].match(/^(\d{1,4})[\.\)\-]?$/);
+      const firstMatch = tokens[0].match(/^(\d{1,4})[.)-]?$/);
       if (firstMatch) {
         slNo = parseInt(firstMatch[1], 10) || nextSlNo;
         startIndex = 1;
@@ -374,7 +375,7 @@ export const PriceListPage: FC = () => {
 
       for (let i = startIndex; i < tokens.length; i++) {
         const tok = tokens[i];
-        const clean = tok.replace(/[₹,Rs\.\/]/gi, '').trim();
+        const clean = tok.replace(/[₹,Rs./]/gi, '').trim();
         const num = parseFloat(clean);
         if (!isNaN(num) && /^\d+(\.\d+)?$/.test(clean) && num > 0) {
           numericTokens.push(num);
@@ -589,7 +590,7 @@ export const PriceListPage: FC = () => {
 
       // Count positive numeric cells in this row (prices)
       const numericCells = nonEmptyCells.filter((c) => {
-        const clean = c.val.replace(/[₹,Rs\.\/\s]/gi, '');
+        const clean = c.val.replace(/[₹,Rs./\s]/gi, '');
         const num = parseFloat(clean);
         return !isNaN(num) && num > 0 && /^\d+(\.\d+)?$/.test(clean);
       });
@@ -599,7 +600,7 @@ export const PriceListPage: FC = () => {
         let textCandidate = nonEmptyCells
           .map((c) => c.val)
           .join(' ')
-          .replace(/^[\d\.\-\)\:]+/, '') // strip leading "1. " or "I. "
+          .replace(/^[\d.\-) :]+/, '') // strip leading "1. " or "I. "
           .replace(/[:\-_~*|=#]+/g, ' ')
           .trim();
 
@@ -711,7 +712,7 @@ export const PriceListPage: FC = () => {
           const numTokens: number[] = [];
 
           for (const cell of nonEmpty) {
-            const clean = cell.val.replace(/[₹,Rs\.\/\s]/gi, '').trim();
+            const clean = cell.val.replace(/[₹,Rs./\s]/gi, '').trim();
             const num = parseFloat(clean);
             if (!isNaN(num) && /^\d+(\.\d+)?$/.test(clean) && num > 0) {
               numTokens.push(num);
@@ -1166,7 +1167,7 @@ export const PriceListPage: FC = () => {
     ];
 
     const storeSettings = getStoredSettings();
-    const compName = storeSettings.companyName || 'Apsara Crackers';
+    const compName = storeSettings.companyName || 'Vaishnavi Crackers';
     const cleanPrefix = compName.replace(/[^a-zA-Z0-9_-]/g, '_');
 
     const worksheet = XLSX.utils.json_to_sheet(templateData);
@@ -1182,7 +1183,7 @@ export const PriceListPage: FC = () => {
       return;
     }
     const storeSettings = getStoredSettings();
-    const compName = storeSettings.companyName || 'Apsara Crackers';
+    const compName = storeSettings.companyName || 'Vaishnavi Crackers';
     const cleanPrefix = compName.replace(/[^a-zA-Z0-9_-]/g, '_');
 
     const exportData = filteredItems.map((item, idx) => ({
@@ -1208,7 +1209,7 @@ export const PriceListPage: FC = () => {
     if (!printWindow) return;
 
     const storeSettings = getStoredSettings();
-    const compName = storeSettings.companyName || 'Apsara Crackers';
+    const compName = storeSettings.companyName || 'Vaishnavi Crackers';
     const compUpper = compName.toUpperCase();
     const compTagline = storeSettings.tagline || `Official Wholesale & Retail Price List • ${storeSettings.city || 'Sivakasi'}`;
 

@@ -13,24 +13,24 @@ import { GstBillPage } from './components/GstBillPage';
 import { SettingsPage, getStoredSettings, DEFAULT_COMPANY_SETTINGS } from './components/SettingsPage';
 import { SettingsApi } from './services/api';
 
-const ACTIVE_TAB_KEY = 'apsara_active_tab';
-const CUSTOMER_SUBVIEW_KEY = 'apsara_customer_subview';
+const ACTIVE_TAB_KEY = 'vaishnavi_active_tab';
+const CUSTOMER_SUBVIEW_KEY = 'vaishnavi_customer_subview';
 
 const VALID_TABS = ['All Customers', 'Billing', 'GST Bill', 'Categories', 'Price List', 'Product', 'Settings'] as const;
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return Boolean(localStorage.getItem('apsara_auth_token'));
+    return Boolean(localStorage.getItem('vaishnavi_auth_token') || localStorage.getItem('apsara_auth_token'));
   });
   const [activeTab, setActiveTab] = useState<NavTab>(() => {
-    const saved = localStorage.getItem(ACTIVE_TAB_KEY);
+    const saved = localStorage.getItem(ACTIVE_TAB_KEY) || localStorage.getItem('apsara_active_tab');
     if (saved && VALID_TABS.includes(saved as NavTab)) {
       return saved as NavTab;
     }
     return 'All Customers';
   });
   const [customerSubView, setCustomerSubView] = useState<'list' | 'add'>(() => {
-    const saved = localStorage.getItem(CUSTOMER_SUBVIEW_KEY);
+    const saved = localStorage.getItem(CUSTOMER_SUBVIEW_KEY) || localStorage.getItem('apsara_customer_subview');
     // Never restore 'add' subview on refresh - go back to list on refresh for add page
     return saved === 'list' ? 'list' : 'list';
   });
@@ -46,7 +46,7 @@ function App() {
 
     const updateTitle = () => {
       const settings = getStoredSettings();
-      const compName = settings.companyName || 'Apsara Crackers';
+      const compName = settings.companyName || 'Vaishnavi Crackers';
       document.title = `${compName} - Billing & Management`;
     };
     updateTitle();
@@ -56,13 +56,15 @@ function App() {
       .then((res) => {
         const data = (res && typeof res === 'object' && 'data' in res && res.data) ? res.data : res;
         if (data && typeof data === 'object') {
-          const compName = (!data.companyName || data.companyName.toLowerCase().includes('varun') || data.companyName.toLowerCase().includes('dheeksha'))
-            ? 'Apsara Crackers'
+          const compName = (!data.companyName || data.companyName.toLowerCase().includes('varun') || data.companyName.toLowerCase().includes('dheeksha') || data.companyName.toLowerCase().includes('apsara'))
+            ? 'Vaishnavi Crackers'
             : (data.companyName ?? DEFAULT_COMPANY_SETTINGS.companyName);
 
           const remoteSettings = { ...DEFAULT_COMPANY_SETTINGS, ...data, companyName: compName };
           localStorage.setItem('apsara_app_settings', JSON.stringify(remoteSettings));
+          localStorage.setItem('vaishnavi_app_settings', JSON.stringify(remoteSettings));
           window.dispatchEvent(new Event('apsara_settings_updated'));
+          window.dispatchEvent(new Event('vaishnavi_settings_updated'));
           updateTitle();
         }
       })
@@ -71,8 +73,10 @@ function App() {
       });
 
     window.addEventListener('apsara_settings_updated', updateTitle);
+    window.addEventListener('vaishnavi_settings_updated', updateTitle);
     return () => {
       window.removeEventListener('apsara_settings_updated', updateTitle);
+      window.removeEventListener('vaishnavi_settings_updated', updateTitle);
     };
   }, []);
 
@@ -82,6 +86,7 @@ function App() {
 
   const handleLogout = () => {
     ['apsara_auth_token', 'apsara_auth_user', 'apsara_active_customer', 'apsara_draft_bill',
+     'vaishnavi_auth_token', 'vaishnavi_auth_user', 'vaishnavi_active_customer', 'vaishnavi_draft_bill',
      'varun_auth_token', 'dheeksha_auth_token', 'varun_auth_user', 'dheeksha_auth_user',
      'varun_active_customer', 'dheeksha_active_customer',
      ACTIVE_TAB_KEY, CUSTOMER_SUBVIEW_KEY].forEach(key => localStorage.removeItem(key));

@@ -11,8 +11,8 @@ async function test() {
     uri = uri.replace(/<([^>]+)>/g, '$1');
   }
   // ensure database name is present
-  if (!uri.includes('.mongodb.net/apsara_crackers_db')) {
-    uri = uri.replace('.mongodb.net/?', '.mongodb.net/apsara_crackers_db?');
+  if (!uri.includes('.mongodb.net/vaishnavi_crackers_db')) {
+    uri = uri.replace('.mongodb.net/?', '.mongodb.net/vaishnavi_crackers_db?');
   }
   console.log('Sanitized URI:', uri.replace(/:([^@]+)@/, ':****@'));
 

@@ -598,7 +598,7 @@ export const uploadParticularPdf = async (req: Request, res: Response, next: Nex
 
         const cloudRes = await uploadToCloudinary(
           pdfData,
-          'apsara_crackers/bills',
+          'vaishnavi_crackers/bills',
           pdfName || `Bill-${existingParticular.billNo || 'receipt'}`
         );
 

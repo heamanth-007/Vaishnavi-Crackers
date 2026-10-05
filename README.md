@@ -1,13 +1,13 @@
-# Varun Trade - Fullstack Application
+# Vaishnavi - Fullstack Application
 
-Varun Trade is a billing and inventory management application built with **React (Vite) + TypeScript + Material UI** on the frontend and **Express + TypeScript + MongoDB (Mongoose)** on the backend.
+Vaishnavi is a billing and inventory management application built with **React (Vite) + TypeScript + Material UI** on the frontend and **Express + TypeScript + MongoDB (Mongoose)** on the backend.
 
 ---
 
 ## 📁 Project Structure
 
 ```text
-varun-trade/                         # Root Project Directory (Frontend + Monorepo root)
+vaishnavi/                           # Root Project Directory (Frontend + Monorepo root)
 ├── index.html                       # Frontend HTML entry point
 ├── package.json                     # Frontend & Root scripts configuration
 ├── vite.config.ts                   # Vite configuration
@@ -55,7 +55,7 @@ varun-trade/                         # Root Project Directory (Frontend + Monore
 
 ## ⚡ How to Run the Application
 
-> **Note:** Always run npm commands from the project root (`Dheeksha-trade`), **do not `cd src`**!
+> **Note:** Always run npm commands from the project root (`vaishnavi`), **do not `cd src`**!
 
 ### 1. Run Both Frontend & Backend Together (Recommended)
 From the root directory:

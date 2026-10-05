@@ -47,6 +47,10 @@ const allowedOrigins = [
   'http://127.0.0.1:5015',
   'http://localhost:3000',
   'http://127.0.0.1:3000',
+  'https://vaishnavi-crackers.gemshine.tech',
+  'http://vaishnavi-crackers.gemshine.tech',
+  'https://vaishnavi.gemshine.tech',
+  'http://vaishnavi.gemshine.tech',
   'https://apsara-crackers.gemshine.tech',
   'http://apsara-crackers.gemshine.tech',
 ];
@@ -92,7 +96,7 @@ app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 app.get('/api/health', (_req: Request, res: Response) => {
   res.status(200).json({
     status: 'OK',
-    message: 'Apsara Crackers API Server is running smoothly',
+    message: 'Vaishnavi Crackers API Server is running smoothly',
     port: PORT,
     timestamp: new Date().toISOString(),
   });
@@ -101,7 +105,7 @@ app.get('/api/health', (_req: Request, res: Response) => {
 app.get('/', (_req: Request, res: Response) => {
   res.status(200).json({
     status: 'OK',
-    service: 'Apsara Crackers Backend API',
+    service: 'Vaishnavi Crackers Backend API',
     health: '/api/health',
   });
 });
@@ -123,7 +127,7 @@ app.use(errorHandler);
 // Start Server
 app.listen(PORT, () => {
   console.log(`=============================================`);
-  console.log(` 🚀 Apsara Crackers Server running on port ${PORT}`);
+  console.log(` 🚀 Vaishnavi Crackers Server running on port ${PORT}`);
   console.log(` 🔗 Health check: http://localhost:${PORT}/api/health`);
   console.log(` 🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`=============================================`);

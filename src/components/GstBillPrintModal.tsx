@@ -26,11 +26,11 @@ interface GstBillPrintModalProps {
 }
 
 export const GstBillPrintModal: React.FC<GstBillPrintModalProps> = ({ open, onClose, bill }) => {
-  if (!bill) return null;
-
   const printAreaRef = React.useRef<HTMLDivElement>(null);
   const [sharing, setSharing] = React.useState<boolean>(false);
   const [downloading, setDownloading] = React.useState<boolean>(false);
+
+  if (!bill) return null;
 
   const handlePrint = () => {
     printGstBillDirectly(bill);
@@ -46,7 +46,7 @@ export const GstBillPrintModal: React.FC<GstBillPrintModalProps> = ({ open, onCl
         customerPhone: bill.customerPhone,
         totalAmount: bill.total || bill.subtotal || 0,
         date: bill.date,
-        companyName: bill.companyName || 'APSARA TRADERS',
+        companyName: bill.companyName || 'VAISHNAVI CRACKERS',
         isGst: true,
       });
     } catch (err) {
@@ -67,7 +67,7 @@ export const GstBillPrintModal: React.FC<GstBillPrintModalProps> = ({ open, onCl
         customerPhone: bill.customerPhone,
         totalAmount: bill.total || bill.subtotal || 0,
         date: bill.date,
-        companyName: bill.companyName || 'APSARA TRADERS',
+        companyName: bill.companyName || 'VAISHNAVI CRACKERS',
         isGst: true,
       });
     } catch (err) {

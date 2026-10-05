@@ -69,7 +69,7 @@ export const INDIAN_STATES = [
   { code: '34', name: 'Puducherry' },
 ];
 
-const GST_LOCAL_HISTORY_KEY = 'apsara_gst_bills_history';
+const GST_LOCAL_HISTORY_KEY = 'vaishnavi_gst_bills_history';
 
 export const getTodayDateString = () => {
   const today = new Date();
@@ -122,10 +122,10 @@ export const GstBillPage: FC = () => {
   const [packingPercent, setPackingPercent] = useState<string>('0.00');
   // Sales Turnover Tracking (Persistent baseline across bills)
   const [currentTurnover, setCurrentTurnover] = useState<string>(() => {
-    return localStorage.getItem('apsara_gst_turnover_current') || storeSettings.gstTurnoverCurrent || '0.00';
+    return localStorage.getItem('vaishnavi_gst_turnover_current') || localStorage.getItem('apsara_gst_turnover_current') || storeSettings.gstTurnoverCurrent || '0.00';
   });
   const [topTurnoverInput, setTopTurnoverInput] = useState<string>(() => {
-    return localStorage.getItem('apsara_gst_turnover_current') || storeSettings.gstTurnoverCurrent || '0.00';
+    return localStorage.getItem('vaishnavi_gst_turnover_current') || localStorage.getItem('apsara_gst_turnover_current') || storeSettings.gstTurnoverCurrent || '0.00';
   });
   const [turnoverSnackbar, setTurnoverSnackbar] = useState<string>('');
   const [hsnNo] = useState<string>('3604');
@@ -324,8 +324,9 @@ export const GstBillPage: FC = () => {
     const formatted = val.toFixed(2);
     setCurrentTurnover(formatted);
     setTopTurnoverInput(formatted);
+    localStorage.setItem('vaishnavi_gst_turnover_current', formatted);
+    localStorage.setItem('vaishnavi_gst_turnover_baseline', formatted);
     localStorage.setItem('apsara_gst_turnover_current', formatted);
-    localStorage.setItem('apsara_gst_turnover_baseline', formatted);
     try {
       await SettingsApi.update({ ...storeSettings, gstTurnoverCurrent: formatted, gstTurnoverBaseline: formatted });
     } catch (e) {
@@ -345,13 +346,17 @@ export const GstBillPage: FC = () => {
     const handleSettingsUpdate = () => {
       const s = getStoredSettings();
       setStoreSettings(s);
-      if (s.gstTurnoverCurrent && !localStorage.getItem('apsara_gst_turnover_current')) {
+      if (s.gstTurnoverCurrent && !localStorage.getItem('vaishnavi_gst_turnover_current')) {
         setCurrentTurnover(s.gstTurnoverCurrent);
         setTopTurnoverInput(s.gstTurnoverCurrent);
       }
     };
     window.addEventListener('apsara_settings_updated', handleSettingsUpdate);
-    return () => window.removeEventListener('apsara_settings_updated', handleSettingsUpdate);
+    window.addEventListener('vaishnavi_settings_updated', handleSettingsUpdate);
+    return () => {
+      window.removeEventListener('apsara_settings_updated', handleSettingsUpdate);
+      window.removeEventListener('vaishnavi_settings_updated', handleSettingsUpdate);
+    };
   }, []);
 
   // Auto-sync customer details on selection
@@ -541,7 +546,7 @@ export const GstBillPage: FC = () => {
       despatchFrom: dispatchFrom || '',
       despatchTo: dispatchTo || '',
       caseCount: lineCalculations.totalCases,
-      companyName: 'APSARA TRADERS',
+      companyName: storeSettings.companyName || 'Vaishnavi Crackers',
       gstin: storeSettings.gstin || '33ABFFA6758B1ZP',
       hsnNo: '3604',
       products: lineCalculations.computedRows,
@@ -647,6 +652,7 @@ export const GstBillPage: FC = () => {
       const newTurnoverStr = addedTurnover.toFixed(2);
       setCurrentTurnover(newTurnoverStr);
       setTopTurnoverInput(newTurnoverStr);
+      localStorage.setItem('vaishnavi_gst_turnover_current', newTurnoverStr);
       localStorage.setItem('apsara_gst_turnover_current', newTurnoverStr);
       SettingsApi.update({ ...storeSettings, gstTurnoverCurrent: newTurnoverStr }).catch(() => {});
 

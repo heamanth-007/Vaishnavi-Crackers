@@ -43,8 +43,8 @@ const seedSampleData = async () => {
     const companies = await Company.insertMany([
       {
         slNo: '01',
-        name: 'Apsara Crackers',
-        avatarLetter: 'A',
+        name: 'Vaishnavi Crackers',
+        avatarLetter: 'V',
         avatarBg: '#DBEAFE',
         avatarColor: '#0B4DB7',
         address: '14, Textile Park Road, Tirupur, Tamil Nadu - 641602',
@@ -107,7 +107,7 @@ const seedSampleData = async () => {
     console.log('📄 Seeding Particulars (Bills)...');
     const bill1 = await Particular.create({
       customerName: 'Saravana Tex & Garments',
-      companyName: 'Apsara Crackers',
+      companyName: 'Vaishnavi Crackers',
       caseCount: '4',
       billNo: '1001',
       date: '2026-08-20',
@@ -164,7 +164,7 @@ const seedSampleData = async () => {
         particularId: bill1._id.toString(),
         billNo: '1001',
         customerName: 'Saravana Tex & Garments',
-        companyName: 'Apsara Crackers',
+        companyName: 'Vaishnavi Crackers',
         date: '2026-08-20',
         debit: '29500.00',
         credit: '0.00',
@@ -173,7 +173,7 @@ const seedSampleData = async () => {
       },
       {
         customerName: 'Saravana Tex & Garments',
-        companyName: 'Apsara Crackers',
+        companyName: 'Vaishnavi Crackers',
         date: '2026-08-25',
         debit: '0.00',
         credit: '15000.00',

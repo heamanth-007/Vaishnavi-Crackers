@@ -1,6 +1,6 @@
-# Apsara Crackers - Complete VPS Deployment Guide (Ubuntu / Hostinger / DigitalOcean)
+# Vaishnavi Crackers - Complete VPS Deployment Guide (Ubuntu / Hostinger / DigitalOcean)
 
-This guide provides complete, step-by-step instructions to deploy the **Apsara Crackers** application (React Vite Frontend + Express Node.js Backend on **Port 5015** + **Local MongoDB Server** + Nginx + PM2 + SSL) for your subdomain **`apsara-crackers.gemshine.tech`**.
+This guide provides complete, step-by-step instructions to deploy the **Vaishnavi Crackers** application (React Vite Frontend + Express Node.js Backend on **Port 5015** + **Local MongoDB Server** + Nginx + PM2 + SSL) for your subdomain **`vaishnavi-crackers.gemshine.tech`**.
 
 ---
 
@@ -11,7 +11,7 @@ This guide provides complete, step-by-step instructions to deploy the **Apsara C
                                     │
                                     ▼
        [ Nginx Reverse Proxy (Port 80 / 443 HTTPS SSL) ]
-                  Host: apsara-crackers.gemshine.tech
+                  Host: vaishnavi-crackers.gemshine.tech
                                     │
                 ┌───────────────────┴───────────────────┐
                 │                                       │
@@ -19,11 +19,11 @@ This guide provides complete, step-by-step instructions to deploy the **Apsara C
                 │                                       │
                 ▼                                       ▼
      Static React SPA Files             Express Node.js Server (Port 5015 via PM2)
-     (/var/www/apsara-crackers/dist)                    │
+     (/var/www/vaishnavi-crackers/dist)                 │
                                         ┌───────────────┴───────────────┐
                                         ▼                               ▼
                                Local MongoDB Server                 Cloudinary
-                          (127.0.0.1:27017/apsara_crackers_db)   (Cloud Storage)
+                          (127.0.0.1:27017/vaishnavi_crackers_db) (Cloud Storage)
 ```
 
 ---
@@ -31,7 +31,7 @@ This guide provides complete, step-by-step instructions to deploy the **Apsara C
 ## 🌐 Step 0: Configure DNS Record in Your Domain Registrar
 Before generating the SSL certificate, ensure your DNS A-Record is pointed to your VPS:
 - **Type**: `A`
-- **Name / Host**: `apsara-crackers` (or full `apsara-crackers.gemshine.tech`)
+- **Name / Host**: `vaishnavi-crackers` (or full `vaishnavi-crackers.gemshine.tech`)
 - **Points to (Value)**: `YOUR_VPS_IP_ADDRESS`
 - **TTL**: Auto / 300s
 
@@ -106,7 +106,7 @@ sudo systemctl status mongod
 
 ---
 
-## 🗄️ Step 3: Create & Verify MongoDB Database (`apsara_crackers_db`)
+## 🗄️ Step 3: Create & Verify MongoDB Database (`vaishnavi_crackers_db`)
 
 You can create and verify the database directly via `mongosh`:
 
@@ -116,12 +116,12 @@ mongosh
 
 Inside the MongoDB shell, run:
 ```javascript
-use apsara_crackers_db
+use vaishnavi_crackers_db
 db.createCollection("init_check")
 show dbs
 exit
 ```
-*(You will see `apsara_crackers_db` listed in the database list).*
+*(You will see `vaishnavi_crackers_db` listed in the database list).*
 
 ---
 
@@ -137,12 +137,12 @@ sudo ufw status
 
 ---
 
-## 📂 Step 5: Clone the Project to `/var/www/apsara-crackers`
+## 📂 Step 5: Clone the Project to `/var/www/vaishnavi-crackers`
 
 ```bash
-sudo mkdir -p /var/www/apsara-crackers
-sudo chown -R $USER:$USER /var/www/apsara-crackers
-cd /var/www/apsara-crackers
+sudo mkdir -p /var/www/vaishnavi-crackers
+sudo chown -R $USER:$USER /var/www/vaishnavi-crackers
+cd /var/www/vaishnavi-crackers
 
 # Clone your repository (or upload files):
 git clone <YOUR_GIT_REPO_URL> .
@@ -176,10 +176,10 @@ PORT=5015
 NODE_ENV=production
 
 # Local MongoDB on VPS
-MONGODB_URI=mongodb://127.0.0.1:27017/apsara_crackers_db
+MONGODB_URI=mongodb://127.0.0.1:27017/vaishnavi_crackers_db
 
 # Subdomain CORS Whitelist
-CORS_ORIGIN=https://apsara-crackers.gemshine.tech,http://apsara-crackers.gemshine.tech,http://localhost:5173,http://localhost:3000,http://localhost:5015
+CORS_ORIGIN=https://vaishnavi-crackers.gemshine.tech,http://vaishnavi-crackers.gemshine.tech,https://vaishnavi.gemshine.tech,http://vaishnavi.gemshine.tech,https://apsara-crackers.gemshine.tech,http://apsara-crackers.gemshine.tech,http://localhost:5173,http://localhost:3000,http://localhost:5015
 
 # JWT Secret Key for Admin Authentication
 JWT_SECRET=VX7Py5RwPP5fzSfE80D0BqkrG6UWJzEb-CYKjl6v0Q
@@ -200,7 +200,7 @@ CLOUDINARY_API_SECRET=e2euCuyOQycviFSHMYhBK-miEKQ
 ## 🔨 Step 7: Install Dependencies & Build Project
 
 ```bash
-cd /var/www/apsara-crackers
+cd /var/www/vaishnavi-crackers
 
 # 1. Install root & frontend dependencies
 npm install
@@ -221,20 +221,20 @@ Run the automated VPS database initialization command:
 npm run init:db
 ```
 This script will:
-- Connect to local MongoDB (`apsara_crackers_db`).
+- Connect to local MongoDB (`vaishnavi_crackers_db`).
 - Create all required collections: `admins`, `customers`, `companies`, `products`, `categories`, `pricelists`, `particulars`, `accountledgers`, `settings`, `inventories`.
 - Create database indexes.
 - Create initial default admin:
   - **Username**: `admin`
   - **Password**: `password123`
-- Create initial company ("Apsara Crackers") and settings.
+- Create initial company ("Vaishnavi Crackers") and settings.
 
 ---
 
 ## ⚡ Step 9: Start Backend Service with PM2 (Port 5015)
 
 ```bash
-cd /var/www/apsara-crackers
+cd /var/www/vaishnavi-crackers
 pm2 start ecosystem.config.cjs
 pm2 save
 pm2 startup
@@ -244,14 +244,14 @@ pm2 startup
 ### Check backend logs to verify connection:
 ```bash
 pm2 status
-pm2 logs apsara-crackers-api --lines 25
+pm2 logs vaishnavi-crackers-api --lines 25
 ```
 You should see:
 ```
 [Database] MongoDB Connected Successfully!
 [Database Host] 127.0.0.1:27017
-[Database Name] apsara_crackers_db
-🚀 Apsara Crackers Server running on port 5015
+[Database Name] vaishnavi_crackers_db
+🚀 Vaishnavi Crackers Server running on port 5015
 🔗 Health check: http://localhost:5015/api/health
 ```
 
@@ -261,12 +261,12 @@ You should see:
 
 Copy the pre-configured Nginx file:
 ```bash
-sudo cp nginx/apsara-crackers.gemshine.tech.conf /etc/nginx/sites-available/apsara-crackers.gemshine.tech
+sudo cp nginx/vaishnavi-crackers.gemshine.tech.conf /etc/nginx/sites-available/vaishnavi-crackers.gemshine.tech
 ```
 
 Enable the site configuration:
 ```bash
-sudo ln -sf /etc/nginx/sites-available/apsara-crackers.gemshine.tech /etc/nginx/sites-enabled/
+sudo ln -sf /etc/nginx/sites-available/vaishnavi-crackers.gemshine.tech /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
 
 # Test Nginx syntax:
@@ -280,28 +280,28 @@ sudo systemctl restart nginx
 
 ## 🔒 Step 11: Install Free SSL Certificate (HTTPS) with Certbot
 
-Ensure your domain `apsara-crackers.gemshine.tech` is pointing to your VPS IP, then run:
+Ensure your domain `vaishnavi-crackers.gemshine.tech` is pointing to your VPS IP, then run:
 
 ```bash
 sudo apt install -y certbot python3-certbot-nginx
-sudo certbot --nginx -d apsara-crackers.gemshine.tech
+sudo certbot --nginx -d vaishnavi-crackers.gemshine.tech
 ```
 - Enter your email address for renewal notices.
 - Agree to the Terms of Service.
-- Certbot will automatically edit `/etc/nginx/sites-available/apsara-crackers.gemshine.tech` to enable HTTPS and configure auto-renewals!
+- Certbot will automatically edit `/etc/nginx/sites-available/vaishnavi-crackers.gemshine.tech` to enable HTTPS and configure auto-renewals!
 
 ---
 
 ## 🧪 Step 12: Verification & Health Check
 
 1. Open your browser and navigate to:
-   - **Frontend**: `https://apsara-crackers.gemshine.tech`
-   - **Backend Health Check**: `https://apsara-crackers.gemshine.tech/api/health`
+   - **Frontend**: `https://vaishnavi-crackers.gemshine.tech`
+   - **Backend Health Check**: `https://vaishnavi-crackers.gemshine.tech/api/health`
 2. Expected Backend Response:
    ```json
    {
      "status": "OK",
-     "message": "Apsara Crackers API Server is running smoothly",
+     "message": "Vaishnavi Crackers API Server is running smoothly",
      "port": 5015,
      "timestamp": "2026-..."
    }
@@ -316,12 +316,12 @@ sudo certbot --nginx -d apsara-crackers.gemshine.tech
 
 ### To Backup the Database:
 ```bash
-mongodump --db=apsara_crackers_db --out=/var/backups/mongo-$(date +%F)
+mongodump --db=vaishnavi_crackers_db --out=/var/backups/mongo-$(date +%F)
 ```
 
 ### To Restore a Backup:
 ```bash
-mongorestore --db=apsara_crackers_db /var/backups/mongo-YYYY-MM-DD/apsara_crackers_db
+mongorestore --db=vaishnavi_crackers_db /var/backups/mongo-YYYY-MM-DD/vaishnavi_crackers_db
 ```
 
 ---
@@ -330,7 +330,7 @@ mongorestore --db=apsara_crackers_db /var/backups/mongo-YYYY-MM-DD/apsara_cracke
 
 Whenever you push new code to your Git repository, simply run this single command on your VPS:
 ```bash
-cd /var/www/apsara-crackers
+cd /var/www/vaishnavi-crackers
 bash deploy.sh
 ```
 This script automatically pulls changes, builds both frontend and backend, and reloads PM2 with zero downtime!

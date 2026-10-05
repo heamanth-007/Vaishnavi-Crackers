@@ -212,8 +212,10 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
       setStoreSettings(getStoredSettings());
     };
     window.addEventListener('apsara_settings_updated', handleSettingsUpdate);
+    window.addEventListener('vaishnavi_settings_updated', handleSettingsUpdate);
     return () => {
       window.removeEventListener('apsara_settings_updated', handleSettingsUpdate);
+      window.removeEventListener('vaishnavi_settings_updated', handleSettingsUpdate);
     };
   }, []);
 
@@ -339,7 +341,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
       customerPhone: bill.customerPhone || '',
       customerAddress: bill.customerAddress || '',
       customerGst: bill.customerGst || '',
-      companyName: bill.companyName || storeSettings.companyName || 'Apsara Crackers',
+      companyName: bill.companyName || storeSettings.companyName || 'Vaishnavi Crackers',
       caseCount: String(bill.caseCount || '0'),
       discount: String(bill.discount ?? '0'),
       transport: String(bill.transport ?? '0'),
@@ -441,7 +443,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
         customerPhone: editBillFormData.customerPhone.trim(),
         customerAddress: editBillFormData.customerAddress.trim(),
         customerGst: editBillFormData.customerGst.trim(),
-        companyName: editBillFormData.companyName.trim() || storeSettings.companyName || 'Apsara Crackers',
+        companyName: editBillFormData.companyName.trim() || storeSettings.companyName || 'Vaishnavi Crackers',
         caseCount: editBillFormData.caseCount || '0',
         discount: editBillFormData.discount || '0',
         transport: editBillFormData.transport || '0',

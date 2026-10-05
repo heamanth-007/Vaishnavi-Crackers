@@ -59,11 +59,11 @@ export const generateBillHtml = (bill: BillPrintData, copiesCount: number = 1): 
   const rawComp =
     bill.companyName && bill.companyName.trim() !== '' && bill.companyName !== 'General'
       ? bill.companyName
-      : storeSettings.companyName || 'APSARA TRADERS';
+      : storeSettings.companyName || 'VAISHNAVI CRACKERS';
   const displayCompanyName =
-    rawComp.toUpperCase().includes('VARUN') || rawComp.toUpperCase().includes('DHEEKSHA')
-      ? 'APSARA TRADERS'
-      : (rawComp.toUpperCase().includes('APSARA') ? 'APSARA TRADERS' : rawComp.toUpperCase());
+    rawComp.toUpperCase().includes('VARUN') || rawComp.toUpperCase().includes('DHEEKSHA') || rawComp.toUpperCase().includes('APSARA')
+      ? (storeSettings.companyName || 'VAISHNAVI CRACKERS').toUpperCase()
+      : (rawComp.toUpperCase().includes('VAISHNAVI') ? (storeSettings.companyName || 'VAISHNAVI CRACKERS').toUpperCase() : rawComp.toUpperCase());
 
   const formatCur = (val: string | number | undefined | null) => {
     if (val === undefined || val === null || val === '') return '0.00';
@@ -172,7 +172,7 @@ export const generateBillHtml = (bill: BillPrintData, copiesCount: number = 1): 
 
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
   const ganeshaImgUrl = `${origin}/ganesha.jpg`;
-  const apsaraImgUrl = `${origin}/apsara_logo.jpg`;
+  const brandImgUrl = storeSettings.logoUrl || `${origin}/logo.png`;
 
   const copyLabels = ['ORIGINAL', 'DUPLICATE', 'TRIPLICATE', 'EXTRA COPY'];
   const invoiceTitle = bill.invoiceTitle || (taxRate > 0 ? 'TAX INVOICE' : 'ESTIMATE');
@@ -230,7 +230,7 @@ export const generateBillHtml = (bill: BillPrintData, copiesCount: number = 1): 
 
       <!-- Main Bordered Container -->
       <div class="bill-box">
-        <!-- Header: Ganesha (Left) | Title (Center) | Apsara Logo (Right) -->
+        <!-- Header: Ganesha (Left) | Title (Center) | Vaishnavi Logo (Right) -->
         <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 10px 6px 10px; border-bottom: 1.5px solid #000000;">
           <div style="width: 75px; text-align: center; flex-shrink: 0;">
             <img src="${ganeshaImgUrl}" alt="Ganesha" style="max-height: 68px; max-width: 72px; object-fit: contain; display: block; margin: 0 auto;" />
@@ -252,7 +252,7 @@ export const generateBillHtml = (bill: BillPrintData, copiesCount: number = 1): 
           </div>
 
           <div style="width: 85px; text-align: center; flex-shrink: 0;">
-            <img src="${apsaraImgUrl}" alt="Apsara Crackers" style="max-height: 68px; max-width: 85px; object-fit: contain; display: block; margin: 0 auto;" />
+            <img src="${brandImgUrl}" alt="Vaishnavi Crackers" style="max-height: 68px; max-width: 85px; object-fit: contain; display: block; margin: 0 auto;" />
           </div>
         </div>
 
@@ -577,11 +577,11 @@ export const generateGstBillHtml = (bill: GstBillPrintData, copiesCount: number 
   const rawComp =
     bill.companyName && bill.companyName.trim() !== '' && bill.companyName !== 'General'
       ? bill.companyName
-      : storeSettings.companyName || 'APSARA TRADERS';
+      : storeSettings.companyName || 'VAISHNAVI CRACKERS';
   const displayCompanyName =
-    rawComp.toUpperCase().includes('VARUN') || rawComp.toUpperCase().includes('DHEEKSHA')
-      ? 'APSARA TRADERS'
-      : (rawComp.toUpperCase().includes('APSARA') ? 'APSARA TRADERS' : rawComp.toUpperCase());
+    rawComp.toUpperCase().includes('VARUN') || rawComp.toUpperCase().includes('DHEEKSHA') || rawComp.toUpperCase().includes('APSARA')
+      ? (storeSettings.companyName || 'VAISHNAVI CRACKERS').toUpperCase()
+      : (rawComp.toUpperCase().includes('VAISHNAVI') ? (storeSettings.companyName || 'VAISHNAVI CRACKERS').toUpperCase() : rawComp.toUpperCase());
 
   const gstinNo = bill.gstin || storeSettings.gstin || '33ABFFA6758B1ZP';
 
@@ -692,7 +692,7 @@ export const generateGstBillHtml = (bill: GstBillPrintData, copiesCount: number 
 
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
   const ganeshaImgUrl = `${origin}/ganesha.jpg`;
-  const apsaraImgUrl = `${origin}/apsara_logo.jpg`;
+  const brandImgUrl = storeSettings.logoUrl || `${origin}/logo.png`;
 
   const copyLabels = ['ORIGINAL', 'DUPLICATE', 'TRIPLICATE', 'EXTRA COPY'];
 
@@ -753,7 +753,7 @@ export const generateGstBillHtml = (bill: GstBillPrintData, copiesCount: number 
           GSTIN No : <span>${gstinNo}</span>
         </div>
 
-        <!-- Header: Ganesha (Left) | Title (Center) | Apsara Logo (Right) -->
+        <!-- Header: Ganesha (Left) | Title (Center) | Vaishnavi Logo (Right) -->
         <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 10px 6px 10px; border-bottom: 1.5px solid #000000;">
           <div style="width: 75px; text-align: center; flex-shrink: 0;">
             <img src="${ganeshaImgUrl}" alt="Ganesha" style="max-height: 68px; max-width: 72px; object-fit: contain; display: block; margin: 0 auto;" />
@@ -775,7 +775,7 @@ export const generateGstBillHtml = (bill: GstBillPrintData, copiesCount: number 
           </div>
 
           <div style="width: 85px; text-align: center; flex-shrink: 0;">
-            <img src="${apsaraImgUrl}" alt="Apsara Crackers" style="max-height: 68px; max-width: 85px; object-fit: contain; display: block; margin: 0 auto;" />
+            <img src="${brandImgUrl}" alt="Vaishnavi Crackers" style="max-height: 68px; max-width: 85px; object-fit: contain; display: block; margin: 0 auto;" />
           </div>
         </div>
 
@@ -1111,7 +1111,7 @@ export const generateCustomerListPrintHtml = (
   dateRangeText?: string
 ): string => {
   const storeSettings = getStoredSettings();
-  const compName = (storeSettings.companyName || 'APSARA CRACKERS').toUpperCase();
+  const compName = (storeSettings.companyName || 'VAISHNAVI CRACKERS').toUpperCase();
   const compSub = storeSettings.tagline || `Wholesale & Retail Trading • ${storeSettings.city || 'Sivakasi'}`;
   const phoneVal = (storeSettings.phone && !storeSettings.phone.includes('98765')) ? storeSettings.phone : '9843067073, 8778429299';
 
@@ -1443,7 +1443,7 @@ export const generateLedgerStatementHtml = (
   dateRangeText?: string
 ): string => {
   const storeSettings = getStoredSettings();
-  const compName = (storeSettings.companyName || 'APSARA CRACKERS').toUpperCase();
+  const compName = (storeSettings.companyName || 'VAISHNAVI CRACKERS').toUpperCase();
   const compSub = storeSettings.tagline || `Wholesale & Retail Trading • ${storeSettings.city || 'Sivakasi'}`;
 
   const currentDate = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
@@ -1547,7 +1547,7 @@ export const printLedgerStatementDirectly = (customerName: string, ledgerEntries
  */
 export const generateParticularsListPrintHtml = (particulars: any[], dateRangeText?: string): string => {
   const storeSettings = getStoredSettings();
-  const compName = (storeSettings.companyName || 'APSARA CRACKERS').toUpperCase();
+  const compName = (storeSettings.companyName || 'VAISHNAVI CRACKERS').toUpperCase();
   const compSub = storeSettings.tagline || `Wholesale & Retail Trading • ${storeSettings.city || 'Sivakasi'}`;
 
   const currentDate = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
@@ -1647,7 +1647,7 @@ export const printParticularsListDirectly = (particulars: any[], dateRangeText?:
  */
 export const generateCompaniesListPrintHtml = (companies: any[]): string => {
   const storeSettings = getStoredSettings();
-  const compName = (storeSettings.companyName || 'APSARA CRACKERS').toUpperCase();
+  const compName = (storeSettings.companyName || 'VAISHNAVI CRACKERS').toUpperCase();
   const currentDate = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
   const rowsHtml = companies.map((c, idx) => `
     <tr>
@@ -1713,7 +1713,7 @@ export const printCompaniesListDirectly = (companies: any[]) => {
  */
 export const generateProductsListPrintHtml = (products: any[]): string => {
   const storeSettings = getStoredSettings();
-  const compName = (storeSettings.companyName || 'APSARA CRACKERS').toUpperCase();
+  const compName = (storeSettings.companyName || 'VAISHNAVI CRACKERS').toUpperCase();
   const currentDate = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
   const rowsHtml = products.map((p, idx) => `
     <tr>
@@ -1779,13 +1779,13 @@ export const printProductsListDirectly = (products: any[]) => {
  */
 const triggerBrowserPrint = (htmlContent: string) => {
   // Clean up any existing iframe to avoid stale listeners or stacked frames
-  const existingIframe = document.getElementById('apsara-print-iframe');
+  const existingIframe = document.getElementById('vaishnavi-print-iframe') || document.getElementById('apsara-print-iframe');
   if (existingIframe) {
     existingIframe.remove();
   }
 
   const iframe = document.createElement('iframe');
-  iframe.id = 'apsara-print-iframe';
+  iframe.id = 'vaishnavi-print-iframe';
   iframe.style.position = 'fixed';
   iframe.style.right = '0';
   iframe.style.bottom = '0';

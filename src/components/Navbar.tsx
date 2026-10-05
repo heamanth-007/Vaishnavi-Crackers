@@ -26,7 +26,7 @@ import CategoryRoundedIcon from '@mui/icons-material/CategoryRounded';
 import FormatListNumberedRoundedIcon from '@mui/icons-material/FormatListNumberedRounded';
 import Inventory2RoundedIcon from '@mui/icons-material/Inventory2Rounded';
 import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
-import defaultApsaraLogo from '../assets/logo.png';
+import defaultBrandLogo from '../assets/logo.png';
 import { getStoredSettings, type CompanySettings } from './SettingsPage';
 import { HealthApi, API_BASE_URL } from '../services/api';
 
@@ -81,8 +81,10 @@ export const Navbar: FC<NavbarProps> = ({
       setCompanySettings(getStoredSettings());
     };
     window.addEventListener('apsara_settings_updated', handleSettingsUpdate);
+    window.addEventListener('vaishnavi_settings_updated', handleSettingsUpdate);
     return () => {
       window.removeEventListener('apsara_settings_updated', handleSettingsUpdate);
+      window.removeEventListener('vaishnavi_settings_updated', handleSettingsUpdate);
     };
   }, []);
 
@@ -143,8 +145,8 @@ export const Navbar: FC<NavbarProps> = ({
           {/* Logo */}
           <Box
             component="img"
-            src={companySettings.logoUrl || defaultApsaraLogo}
-            alt={companySettings.companyName || 'Apsara Crackers'}
+            src={companySettings.logoUrl || defaultBrandLogo}
+            alt={companySettings.companyName || 'Vaishnavi Crackers'}
             sx={{
               width: { xs: 34, sm: 40 },
               height: { xs: 34, sm: 40 },
@@ -169,7 +171,7 @@ export const Navbar: FC<NavbarProps> = ({
                 textOverflow: 'ellipsis',
               }}
             >
-              {companySettings.companyName || 'Apsara Crackers'}
+              {companySettings.companyName || 'Vaishnavi Crackers'}
             </Typography>
             <Typography
               sx={{
@@ -512,7 +514,7 @@ export const Navbar: FC<NavbarProps> = ({
           >
             <Box>
               <Typography sx={{ fontSize: '15px', fontWeight: 800 }}>
-                {companySettings.companyName || 'Apsara Crackers'}
+                {companySettings.companyName || 'Vaishnavi Crackers'}
               </Typography>
               <Typography sx={{ fontSize: '11px', color: '#FEF08A', fontWeight: 600 }}>
                 Main Navigation

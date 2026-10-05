@@ -165,7 +165,8 @@ export const CustomersPage: FC<CustomersPageProps> = ({ onAddNew, onSelectCustom
       const deletedCust = customers.find((c) => (c._id || c.id) === id);
       await CustomersApi.delete(id);
       setCustomers((prev) => prev.filter((c) => (c._id || c.id) !== id));
-      if (deletedCust && (localStorage.getItem('apsara_active_customer') === deletedCust.name || localStorage.getItem('varun_active_customer') === deletedCust.name)) {
+      if (deletedCust && (localStorage.getItem('vaishnavi_active_customer') === deletedCust.name || localStorage.getItem('apsara_active_customer') === deletedCust.name || localStorage.getItem('varun_active_customer') === deletedCust.name)) {
+        localStorage.removeItem('vaishnavi_active_customer');
         localStorage.removeItem('apsara_active_customer');
         localStorage.removeItem('varun_active_customer');
         localStorage.removeItem('dheeksha_active_customer');
@@ -181,7 +182,7 @@ export const CustomersPage: FC<CustomersPageProps> = ({ onAddNew, onSelectCustom
     const due = customer.pendingDue || 0;
     const storeSettings = getStoredSettings();
     setPaymentForm({
-      companyName: companies.length > 0 ? companies[0].name : (storeSettings.companyName || 'Apsara Crackers'),
+      companyName: companies.length > 0 ? companies[0].name : (storeSettings.companyName || 'Vaishnavi Crackers'),
       creditAmount: due > 0 ? String(due) : '',
       date: new Date().toLocaleDateString('en-GB').replace(/\//g, '-'),
     });

@@ -45,7 +45,7 @@ export interface CompanySettings {
 }
 
 export const DEFAULT_COMPANY_SETTINGS: CompanySettings = {
-  companyName: 'Apsara Crackers',
+  companyName: 'Vaishnavi Crackers',
   tagline: 'Standard Fire Works & Fancy Crackers',
   ownerName: '',
   phone: '9843067073',
@@ -140,11 +140,11 @@ export const removeWhiteBackgroundFromDataUrl = (
 
 export const getStoredSettings = (): CompanySettings => {
   try {
-    const saved = localStorage.getItem('apsara_app_settings') || localStorage.getItem('varun_app_settings') || localStorage.getItem('dheeksha_app_settings');
+    const saved = localStorage.getItem('vaishnavi_app_settings') || localStorage.getItem('apsara_app_settings') || localStorage.getItem('varun_app_settings') || localStorage.getItem('dheeksha_app_settings');
     if (saved) {
       const parsed = JSON.parse(saved);
-      if (!parsed.companyName || parsed.companyName.toLowerCase().includes('varun') || parsed.companyName.toLowerCase().includes('dheeksha')) {
-        parsed.companyName = 'Apsara Crackers';
+      if (!parsed.companyName || parsed.companyName.toLowerCase().includes('varun') || parsed.companyName.toLowerCase().includes('dheeksha') || parsed.companyName.toLowerCase().includes('apsara')) {
+        parsed.companyName = 'Vaishnavi Crackers';
       }
       if (!parsed.logoUrl || parsed.logoUrl.includes('varun-traders.png')) {
         parsed.logoUrl = defaultProjectLogo;
@@ -192,8 +192,8 @@ export const SettingsPage: React.FC = () => {
         const res = await SettingsApi.get();
         const data = (res && typeof res === 'object' && 'data' in res && res.data) ? res.data : res;
         if (data && typeof data === 'object') {
-          const compName = (!data.companyName || data.companyName.toLowerCase().includes('varun') || data.companyName.toLowerCase().includes('dheeksha'))
-            ? 'Apsara Crackers'
+          const compName = (!data.companyName || data.companyName.toLowerCase().includes('varun') || data.companyName.toLowerCase().includes('dheeksha') || data.companyName.toLowerCase().includes('apsara'))
+            ? 'Vaishnavi Crackers'
             : data.companyName;
 
           const logo = (!data.logoUrl || data.logoUrl.includes('varun-traders.png'))
@@ -230,9 +230,11 @@ export const SettingsPage: React.FC = () => {
             defaultTaxRate: data.defaultTaxRate || '18',
           };
           setSettings(remoteSettings);
+          localStorage.setItem('vaishnavi_app_settings', JSON.stringify(remoteSettings));
           localStorage.setItem('apsara_app_settings', JSON.stringify(remoteSettings));
           localStorage.removeItem('varun_app_settings');
           localStorage.removeItem('dheeksha_app_settings');
+          window.dispatchEvent(new Event('vaishnavi_settings_updated'));
           window.dispatchEvent(new Event('apsara_settings_updated'));
         }
       } catch (err) {
@@ -344,9 +346,11 @@ export const SettingsPage: React.FC = () => {
     try {
       setIsSaving(true);
       // 1. Immediately cache in localStorage for instant UI feedback
+      localStorage.setItem('vaishnavi_app_settings', JSON.stringify(settings));
       localStorage.setItem('apsara_app_settings', JSON.stringify(settings));
       localStorage.removeItem('varun_app_settings');
       localStorage.removeItem('dheeksha_app_settings');
+      window.dispatchEvent(new Event('vaishnavi_settings_updated'));
       window.dispatchEvent(new Event('apsara_settings_updated'));
 
       // 2. Persist to MongoDB database so it syncs across all devices & deployments!
@@ -371,9 +375,11 @@ export const SettingsPage: React.FC = () => {
           defaultTaxRate: data.defaultTaxRate ?? settings.defaultTaxRate ?? '18',
         };
         setSettings(syncedSettings);
+        localStorage.setItem('vaishnavi_app_settings', JSON.stringify(syncedSettings));
         localStorage.setItem('apsara_app_settings', JSON.stringify(syncedSettings));
         localStorage.removeItem('varun_app_settings');
         localStorage.removeItem('dheeksha_app_settings');
+        window.dispatchEvent(new Event('vaishnavi_settings_updated'));
         window.dispatchEvent(new Event('apsara_settings_updated'));
       }
 
@@ -397,9 +403,11 @@ export const SettingsPage: React.FC = () => {
   const handleResetToDefault = async () => {
     if (window.confirm('Reset company profile details to default values?')) {
       setSettings(DEFAULT_COMPANY_SETTINGS);
+      localStorage.setItem('vaishnavi_app_settings', JSON.stringify(DEFAULT_COMPANY_SETTINGS));
       localStorage.setItem('apsara_app_settings', JSON.stringify(DEFAULT_COMPANY_SETTINGS));
       localStorage.removeItem('varun_app_settings');
       localStorage.removeItem('dheeksha_app_settings');
+      window.dispatchEvent(new Event('vaishnavi_settings_updated'));
       window.dispatchEvent(new Event('apsara_settings_updated'));
       try {
         await SettingsApi.update(DEFAULT_COMPANY_SETTINGS);

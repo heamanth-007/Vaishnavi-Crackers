@@ -1,6 +1,6 @@
 import React from 'react';
 import defaultGaneshaLogo from '../assets/ganesha.jpg';
-import defaultApsaraFeatherLogo from '../assets/apsara_logo.jpg';
+import defaultBrandLogo from '../assets/logo.png';
 import { getStoredSettings } from './SettingsPage';
 import { numberToIndianWords } from '../utils/numberToWords';
 
@@ -98,18 +98,20 @@ export const GstBillPrintTemplate: React.FC<GstBillPrintTemplateProps> = ({ bill
       setStoreSettings(getStoredSettings());
     };
     window.addEventListener('apsara_settings_updated', handleSettingsUpdate);
+    window.addEventListener('vaishnavi_settings_updated', handleSettingsUpdate);
     return () => {
       window.removeEventListener('apsara_settings_updated', handleSettingsUpdate);
+      window.removeEventListener('vaishnavi_settings_updated', handleSettingsUpdate);
     };
   }, []);
 
   // Display Company Name
   const rawComp = bill.companyName && bill.companyName.trim() !== '' && bill.companyName !== 'General'
     ? bill.companyName
-    : storeSettings.companyName || 'APSARA TRADERS';
-  const displayCompanyName = rawComp.toUpperCase().includes('VARUN') || rawComp.toUpperCase().includes('DHEEKSHA')
-    ? 'APSARA TRADERS'
-    : (rawComp.toUpperCase().includes('APSARA') ? 'APSARA TRADERS' : rawComp.toUpperCase());
+    : storeSettings.companyName || 'VAISHNAVI CRACKERS';
+  const displayCompanyName = rawComp.toUpperCase().includes('VARUN') || rawComp.toUpperCase().includes('DHEEKSHA') || rawComp.toUpperCase().includes('APSARA')
+    ? (storeSettings.companyName || 'VAISHNAVI CRACKERS').toUpperCase()
+    : (rawComp.toUpperCase().includes('VAISHNAVI') ? (storeSettings.companyName || 'VAISHNAVI CRACKERS').toUpperCase() : rawComp.toUpperCase());
 
   // GSTIN
   const gstinNo = bill.gstin || storeSettings.gstin || '33ABFFA6758B1ZP';
@@ -288,7 +290,7 @@ export const GstBillPrintTemplate: React.FC<GstBillPrintTemplateProps> = ({ bill
           GSTIN No : <span>{gstinNo}</span>
         </div>
 
-        {/* Header: Ganesha (Left) | Title & Address (Center) | Apsara Logo (Right) */}
+        {/* Header: Ganesha (Left) | Title & Address (Center) | Vaishnavi Logo (Right) */}
         <div
           style={{
             display: 'flex',
@@ -313,7 +315,7 @@ export const GstBillPrintTemplate: React.FC<GstBillPrintTemplateProps> = ({ bill
             />
           </div>
 
-          {/* Center: Apsara Traders Details */}
+          {/* Center: Vaishnavi Crackers Details */}
           <div style={{ flex: 1, textAlign: 'center', padding: '0 8px' }}>
             <div
               style={{
@@ -347,11 +349,11 @@ export const GstBillPrintTemplate: React.FC<GstBillPrintTemplateProps> = ({ bill
             </div>
           </div>
 
-          {/* Right: Apsara Crackers Logo */}
+          {/* Right: Vaishnavi Crackers Logo */}
           <div style={{ width: '85px', textAlign: 'center', flexShrink: 0 }}>
             <img
-              src={defaultApsaraFeatherLogo}
-              alt="Apsara Crackers"
+              src={storeSettings.logoUrl || defaultBrandLogo}
+              alt="Vaishnavi Crackers"
               style={{
                 maxHeight: '68px',
                 maxWidth: '85px',

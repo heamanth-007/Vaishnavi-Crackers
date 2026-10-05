@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'apsara-crackers-api',
+      name: 'vaishnavi-crackers-api',
       cwd: './server',
       script: 'dist/index.js',
       instances: 1,
