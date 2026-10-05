@@ -25,12 +25,11 @@ import ReceiptLongRoundedIcon from '@mui/icons-material/ReceiptLongRounded';
 import CategoryRoundedIcon from '@mui/icons-material/CategoryRounded';
 import FormatListNumberedRoundedIcon from '@mui/icons-material/FormatListNumberedRounded';
 import Inventory2RoundedIcon from '@mui/icons-material/Inventory2Rounded';
-import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
 import defaultBrandLogo from '../assets/logo.png';
 import { getStoredSettings, type CompanySettings } from './SettingsPage';
 import { HealthApi, API_BASE_URL } from '../services/api';
 
-export type NavTab = 'All Customers' | 'Billing' | 'GST Bill' | 'Categories' | 'Price List' | 'Product' | 'Settings';
+export type NavTab = 'All Customers' | 'Billing' | 'Categories' | 'Price List' | 'Product' | 'Settings';
 
 interface NavbarProps {
   activeTab?: NavTab;
@@ -41,7 +40,6 @@ interface NavbarProps {
 const TAB_ICONS: Record<NavTab, React.ReactElement> = {
   'All Customers': <PeopleAltRoundedIcon sx={{ fontSize: 20 }} />,
   'Billing': <ReceiptLongRoundedIcon sx={{ fontSize: 20 }} />,
-  'GST Bill': <DescriptionRoundedIcon sx={{ fontSize: 20 }} />,
   'Categories': <CategoryRoundedIcon sx={{ fontSize: 20 }} />,
   'Price List': <FormatListNumberedRoundedIcon sx={{ fontSize: 20 }} />,
   'Product': <Inventory2RoundedIcon sx={{ fontSize: 20 }} />,
@@ -53,7 +51,7 @@ export const Navbar: FC<NavbarProps> = ({
   onSelectTab,
   onLogout,
 }) => {
-  const tabs: NavTab[] = ['All Customers', 'Billing', 'GST Bill', 'Categories', 'Price List', 'Product', 'Settings'];
+  const tabs: NavTab[] = ['All Customers', 'Billing', 'Categories', 'Price List', 'Product', 'Settings'];
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [companySettings, setCompanySettings] = useState<CompanySettings>(getStoredSettings);
