@@ -140,31 +140,30 @@ export const removeWhiteBackgroundFromDataUrl = (
 
 export const getStoredSettings = (): CompanySettings => {
   try {
-    const saved = localStorage.getItem('vaishnavi_app_settings') || localStorage.getItem('apsara_app_settings') || localStorage.getItem('varun_app_settings') || localStorage.getItem('dheeksha_app_settings');
+    const saved = localStorage.getItem('vaishnavi_app_settings') || localStorage.getItem('apsara_app_settings');
     if (saved) {
       const parsed = JSON.parse(saved);
-      if (!parsed.companyName || parsed.companyName.toLowerCase().includes('varun') || parsed.companyName.toLowerCase().includes('dheeksha') || parsed.companyName.toLowerCase().includes('apsara')) {
-        parsed.companyName = 'Vaishnavi Crackers';
+      if (parsed && typeof parsed === 'object') {
+        return {
+          ...DEFAULT_COMPANY_SETTINGS,
+          ...parsed,
+          companyName: parsed.companyName || DEFAULT_COMPANY_SETTINGS.companyName,
+          tagline: parsed.tagline !== undefined ? parsed.tagline : DEFAULT_COMPANY_SETTINGS.tagline,
+          ownerName: parsed.ownerName !== undefined ? parsed.ownerName : DEFAULT_COMPANY_SETTINGS.ownerName,
+          phone: parsed.phone !== undefined ? parsed.phone : DEFAULT_COMPANY_SETTINGS.phone,
+          whatsapp: parsed.whatsapp !== undefined ? parsed.whatsapp : DEFAULT_COMPANY_SETTINGS.whatsapp,
+          email: parsed.email !== undefined ? parsed.email : DEFAULT_COMPANY_SETTINGS.email,
+          address: parsed.address !== undefined ? parsed.address : DEFAULT_COMPANY_SETTINGS.address,
+          city: parsed.city !== undefined ? parsed.city : DEFAULT_COMPANY_SETTINGS.city,
+          pincode: parsed.pincode !== undefined ? parsed.pincode : DEFAULT_COMPANY_SETTINGS.pincode,
+          state: parsed.state !== undefined ? parsed.state : DEFAULT_COMPANY_SETTINGS.state,
+          gstin: parsed.gstin !== undefined ? parsed.gstin : DEFAULT_COMPANY_SETTINGS.gstin,
+          pan: parsed.pan !== undefined ? parsed.pan : DEFAULT_COMPANY_SETTINGS.pan,
+          logoUrl: parsed.logoUrl || DEFAULT_COMPANY_SETTINGS.logoUrl,
+          enableTax: Boolean(parsed.enableTax),
+          defaultTaxRate: parsed.defaultTaxRate || DEFAULT_COMPANY_SETTINGS.defaultTaxRate,
+        };
       }
-      if (!parsed.logoUrl || parsed.logoUrl.includes('varun-traders.png')) {
-        parsed.logoUrl = defaultProjectLogo;
-      }
-      if (!parsed.phone || parsed.phone.includes('98765')) {
-        parsed.phone = '9843067073';
-      }
-      if (!parsed.whatsapp || parsed.whatsapp.includes('98765')) {
-        parsed.whatsapp = '8778429299';
-      }
-      if (!parsed.address || parsed.address.toLowerCase().includes('tirupur') || parsed.address.toLowerCase().includes('varun')) {
-        parsed.address = '67 - H/E, Rajivgandhi Nagar, Near Ramji Polypack, Sivakasi Bus Stand , Sivakasi';
-      }
-      if (!parsed.city) {
-        parsed.city = 'Sivakasi';
-      }
-      if (!parsed.state) {
-        parsed.state = 'Tamil Nadu';
-      }
-      return { ...DEFAULT_COMPANY_SETTINGS, ...parsed };
     }
   } catch (err) {
     console.error('Failed to parse settings from localStorage:', err);
@@ -192,42 +191,22 @@ export const SettingsPage: React.FC = () => {
         const res = await SettingsApi.get();
         const data = (res && typeof res === 'object' && 'data' in res && res.data) ? res.data : res;
         if (data && typeof data === 'object') {
-          const compName = (!data.companyName || data.companyName.toLowerCase().includes('varun') || data.companyName.toLowerCase().includes('dheeksha') || data.companyName.toLowerCase().includes('apsara'))
-            ? 'Vaishnavi Crackers'
-            : data.companyName;
-
-          const logo = (!data.logoUrl || data.logoUrl.includes('varun-traders.png'))
-            ? defaultProjectLogo
-            : data.logoUrl;
-
-          const address = (!data.address || data.address.toLowerCase().includes('tirupur') || data.address.toLowerCase().includes('varun'))
-            ? '67 - H/E, Rajivgandhi Nagar, Near Ramji Polypack, Sivakasi Bus Stand , Sivakasi'
-            : data.address;
-
-          const phone = (!data.phone || data.phone.includes('98765'))
-            ? '9843067073'
-            : data.phone;
-
-          const whatsapp = (!data.whatsapp || data.whatsapp.includes('98765'))
-            ? '8778429299'
-            : data.whatsapp;
-
           const remoteSettings: CompanySettings = {
-            companyName: compName,
-            tagline: data.tagline || DEFAULT_COMPANY_SETTINGS.tagline,
+            companyName: data.companyName || DEFAULT_COMPANY_SETTINGS.companyName,
+            tagline: data.tagline !== undefined ? data.tagline : DEFAULT_COMPANY_SETTINGS.tagline,
             ownerName: data.ownerName ?? DEFAULT_COMPANY_SETTINGS.ownerName,
-            phone: phone,
-            whatsapp: whatsapp,
+            phone: data.phone !== undefined && data.phone !== '' ? data.phone : DEFAULT_COMPANY_SETTINGS.phone,
+            whatsapp: data.whatsapp !== undefined && data.whatsapp !== '' ? data.whatsapp : DEFAULT_COMPANY_SETTINGS.whatsapp,
             email: data.email ?? DEFAULT_COMPANY_SETTINGS.email,
-            address: address,
-            city: data.city || 'Sivakasi',
-            pincode: data.pincode || '626123',
-            state: data.state || 'Tamil Nadu',
+            address: data.address !== undefined && data.address !== '' ? data.address : DEFAULT_COMPANY_SETTINGS.address,
+            city: data.city || DEFAULT_COMPANY_SETTINGS.city,
+            pincode: data.pincode || DEFAULT_COMPANY_SETTINGS.pincode,
+            state: data.state || DEFAULT_COMPANY_SETTINGS.state,
             gstin: data.gstin ?? DEFAULT_COMPANY_SETTINGS.gstin,
             pan: data.pan ?? DEFAULT_COMPANY_SETTINGS.pan,
-            logoUrl: logo,
+            logoUrl: data.logoUrl || DEFAULT_COMPANY_SETTINGS.logoUrl,
             enableTax: Boolean(data.enableTax),
-            defaultTaxRate: data.defaultTaxRate || '18',
+            defaultTaxRate: data.defaultTaxRate || DEFAULT_COMPANY_SETTINGS.defaultTaxRate,
           };
           setSettings(remoteSettings);
           localStorage.setItem('vaishnavi_app_settings', JSON.stringify(remoteSettings));

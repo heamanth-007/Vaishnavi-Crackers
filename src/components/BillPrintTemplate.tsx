@@ -297,7 +297,7 @@ export const BillPrintTemplate: React.FC<BillPrintTemplateProps> = ({ bill, copy
             />
           </div>
 
-          {/* Center: Vaishnavi Crackers Details */}
+          {/* Center: Company Details */}
           <div style={{ flex: 1, textAlign: 'center', padding: '0 8px' }}>
             <div
               style={{
@@ -312,23 +312,35 @@ export const BillPrintTemplate: React.FC<BillPrintTemplateProps> = ({ bill, copy
             >
               {displayCompanyName}
             </div>
-            <div
-              style={{
-                fontSize: '11px',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                color: '#000000',
-                marginBottom: '2px',
-              }}
-            >
-              (ALL KINDS OF CRACKERS AND FANCY VARIETIES AVAILABLE)
-            </div>
-            <div style={{ fontSize: '11.5px', color: '#000000', marginBottom: '1px' }}>
-              #67-H-E, Rajiv gandhi Nagar,Near Ramji Polypack Sivakasi bus stand Backside
-            </div>
+            {storeSettings.tagline ? (
+              <div
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  color: '#000000',
+                  marginBottom: '2px',
+                }}
+              >
+                {storeSettings.tagline.startsWith('(') ? storeSettings.tagline : `(${storeSettings.tagline})`}
+              </div>
+            ) : null}
+            {storeSettings.address ? (
+              <div style={{ fontSize: '11.5px', color: '#000000', marginBottom: '1px' }}>
+                {storeSettings.address}
+              </div>
+            ) : null}
             <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#000000' }}>
-              SIVAKASI - 626 123
+              {[storeSettings.city || 'SIVAKASI', storeSettings.pincode ? `- ${storeSettings.pincode}` : ''].filter(Boolean).join(' ')}
             </div>
+            {(storeSettings.phone || storeSettings.whatsapp) ? (
+              <div style={{ fontSize: '10.5px', fontWeight: 700, color: '#000000', marginTop: '1px' }}>
+                {[
+                  storeSettings.phone ? `Cell: ${storeSettings.phone}` : '',
+                  storeSettings.whatsapp ? `WhatsApp: ${storeSettings.whatsapp}` : '',
+                ].filter(Boolean).join(' | ')}
+              </div>
+            ) : null}
           </div>
 
           {/* Right: Vaishnavi Crackers Logo */}

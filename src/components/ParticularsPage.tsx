@@ -32,8 +32,9 @@ import {
   ProductsApi,
   PriceListsApi,
   ParticularsApi,
+  SettingsApi,
 } from '../services/api';
-import { getStoredSettings } from './SettingsPage';
+import { getStoredSettings, DEFAULT_COMPANY_SETTINGS } from './SettingsPage';
 import { BillPrintModal } from './BillPrintModal';
 import type { BillPrintData } from './BillPrintTemplate';
 import { printBillDirectly } from '../utils/printUtils';
@@ -205,6 +206,26 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
         setTax('0');
       }
     };
+
+    // Also fetch fresh from API on mount
+    SettingsApi.get()
+      .then((res) => {
+        const data = (res && typeof res === 'object' && 'data' in res && res.data) ? res.data : res;
+        if (data && typeof data === 'object') {
+          const remoteSettings = { ...DEFAULT_COMPANY_SETTINGS, ...data };
+          setStoreSettings(remoteSettings);
+          setCompany(remoteSettings.companyName || 'Vaishnavi Crackers');
+          if (remoteSettings.enableTax && (!tax || tax === '0')) {
+            setTax(remoteSettings.defaultTaxRate || '0');
+          } else if (!remoteSettings.enableTax) {
+            setTax('0');
+          }
+        }
+      })
+      .catch((err) => {
+        console.warn('Could not sync settings from API:', err);
+      });
+
     window.addEventListener('apsara_settings_updated', handleSettingsUpdate);
     window.addEventListener('vaishnavi_settings_updated', handleSettingsUpdate);
     return () => {

@@ -239,15 +239,27 @@ export const generateBillHtml = (bill: BillPrintData, copiesCount: number = 1): 
             <div style="font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.03em; line-height: 1.15; margin-bottom: 2px; color: #000000;">
               ${displayCompanyName}
             </div>
-            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #000000; margin-bottom: 2px;">
-              (ALL KINDS OF CRACKERS AND FANCY VARIETIES AVAILABLE)
-            </div>
-            <div style="font-size: 11.5px; color: #000000; margin-bottom: 1px;">
-              #67-H-E, Rajiv gandhi Nagar,Near Ramji Polypack Sivakasi bus stand Backside
-            </div>
+            ${storeSettings.tagline ? `
+              <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #000000; margin-bottom: 2px;">
+                ${storeSettings.tagline.startsWith('(') ? storeSettings.tagline : `(${storeSettings.tagline})`}
+              </div>
+            ` : ''}
+            ${storeSettings.address ? `
+              <div style="font-size: 11.5px; color: #000000; margin-bottom: 1px;">
+                ${storeSettings.address}
+              </div>
+            ` : ''}
             <div style="font-size: 12.5px; font-weight: 800; color: #000000;">
-              SIVAKASI - 626 123
+              ${[storeSettings.city || 'SIVAKASI', storeSettings.pincode ? `- ${storeSettings.pincode}` : ''].filter(Boolean).join(' ')}
             </div>
+            ${(storeSettings.phone || storeSettings.whatsapp) ? `
+              <div style="font-size: 10.5px; font-weight: 700; color: #000000; margin-top: 1px;">
+                ${[
+                  storeSettings.phone ? `Cell: ${storeSettings.phone}` : '',
+                  storeSettings.whatsapp ? `WhatsApp: ${storeSettings.whatsapp}` : '',
+                ].filter(Boolean).join(' | ')}
+              </div>
+            ` : ''}
           </div>
 
           <div style="width: 85px; text-align: center; flex-shrink: 0;">
