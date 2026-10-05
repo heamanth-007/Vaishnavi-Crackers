@@ -1146,7 +1146,7 @@ export const generateCustomerListPrintHtml = (
     
     let balanceHtml = '';
     if ((c.pendingDue || 0) > 0) {
-      balanceHtml = `<span style="color:#DC2626; font-weight:800;">₹ ${(c.pendingDue || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })} (Due)</span>`;
+      balanceHtml = `<span style="color:#B45309; font-weight:800;">₹ ${(c.pendingDue || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })} (Due)</span>`;
     } else if ((c.netBalance || 0) > 0) {
       balanceHtml = `<span style="color:#0284C7; font-weight:800;">+₹ ${(c.netBalance || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })} (Adv)</span>`;
     } else {
@@ -1365,9 +1365,9 @@ export const generateCustomerListPrintHtml = (
         <div class="kpi-title">Total Credit (Paid)</div>
         <div class="kpi-val" style="color:#16A34A;">₹ ${totalCredit.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
       </div>
-      <div class="kpi-card" style="background-color:#FEF2F2; border-color:#FECACA;">
-        <div class="kpi-title" style="color:#991B1B;">Total Pending Due</div>
-        <div class="kpi-val" style="color:#DC2626;">₹ ${totalPendingDue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
+      <div class="kpi-card" style="background-color:#FFFBEB; border-color:#FDE68A;">
+        <div class="kpi-title" style="color:#92400E;">Total Pending Due</div>
+        <div class="kpi-val" style="color:#B45309;">₹ ${totalPendingDue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
       </div>
       <div class="kpi-card" style="background-color:#F0F9FF; border-color:#BAE6FD;">
         <div class="kpi-title" style="color:#0369A1;">Total Advance Balances</div>
@@ -1400,7 +1400,7 @@ export const generateCustomerListPrintHtml = (
           <td class="text-right">
             ${
               totalPendingDue > 0
-                ? `<span style="color:#DC2626;">Due: ₹ ${totalPendingDue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>`
+                ? `<span style="color:#B45309;">Due: ₹ ${totalPendingDue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>`
                 : `<span style="color:#16A34A;">Settled</span>`
             }
           </td>
@@ -1526,7 +1526,7 @@ export const generateLedgerStatementHtml = (
         <td colspan="4" class="text-right">TOTALS:</td>
         <td class="text-right">₹ ${totalDeb.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
         <td class="text-right" style="color:#16A34A;">₹ ${totalCred.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-        <td class="text-right" style="color:${netBalance < 0 ? '#DC2626' : '#16A34A'};">
+        <td class="text-right" style="color:${netBalance < 0 ? '#B45309' : '#16A34A'};">
           ₹ ${Math.abs(netBalance).toLocaleString('en-IN', { minimumFractionDigits: 2 })} ${netBalance < 0 ? 'Dr' : 'Cr'}
         </td>
       </tr>

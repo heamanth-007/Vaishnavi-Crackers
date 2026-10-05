@@ -153,8 +153,8 @@ export const DateRangePrintModal: FC<DateRangePrintModalProps> = ({
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
-          <CalendarMonthRoundedIcon sx={{ color: '#B91C1C', fontSize: 24 }} />
-          <Typography sx={{ fontSize: '18px', fontWeight: 800, color: '#B91C1C' }}>
+          <CalendarMonthRoundedIcon sx={{ color: '#1D4ED8', fontSize: 24 }} />
+          <Typography sx={{ fontSize: '18px', fontWeight: 800, color: '#0B0F19' }}>
             {title || 'Select Date Range for Print'}
           </Typography>
         </Box>
@@ -188,12 +188,12 @@ export const DateRangePrintModal: FC<DateRangePrintModalProps> = ({
                 sx={{
                   fontWeight: 600,
                   fontSize: '12px',
-                  backgroundColor: isSelected ? '#B91C1C' : '#FFFFFF',
+                  backgroundColor: isSelected ? '#1D4ED8' : '#FFFFFF',
                   color: isSelected ? '#FFFFFF' : '#475569',
-                  border: isSelected ? '1px solid #991B1B' : '1px solid #E2E8F0',
+                  border: isSelected ? '1px solid #1E40AF' : '1px solid #E2E8F0',
                   cursor: 'pointer',
                   '&:hover': {
-                    backgroundColor: isSelected ? '#991B1B' : '#F8FAFC',
+                    backgroundColor: isSelected ? '#1E40AF' : '#F8FAFC',
                   },
                 }}
               />
@@ -224,8 +224,8 @@ export const DateRangePrintModal: FC<DateRangePrintModalProps> = ({
                     borderRadius: '8px',
                     backgroundColor: '#FFFFFF',
                     '& fieldset': { borderColor: '#E2E8F0' },
-                    '&:hover fieldset': { borderColor: '#D97706' },
-                    '&.Mui-focused fieldset': { borderColor: '#DC2626' },
+                    '&:hover fieldset': { borderColor: '#EAB308' },
+                    '&.Mui-focused fieldset': { borderColor: '#1D4ED8' },
                   },
                 },
               }}
@@ -252,8 +252,8 @@ export const DateRangePrintModal: FC<DateRangePrintModalProps> = ({
                     borderRadius: '8px',
                     backgroundColor: '#FFFFFF',
                     '& fieldset': { borderColor: '#E2E8F0' },
-                    '&:hover fieldset': { borderColor: '#D97706' },
-                    '&.Mui-focused fieldset': { borderColor: '#DC2626' },
+                    '&:hover fieldset': { borderColor: '#EAB308' },
+                    '&.Mui-focused fieldset': { borderColor: '#1D4ED8' },
                   },
                 },
               }}
@@ -266,9 +266,9 @@ export const DateRangePrintModal: FC<DateRangePrintModalProps> = ({
           sx={{
             p: 1.6,
             borderRadius: '10px',
-            backgroundColor: filteredItems.length > 0 ? '#F0FDF4' : '#FEF2F2',
+            backgroundColor: filteredItems.length > 0 ? '#F0FDF4' : '#F8FAFC',
             border: '1px solid',
-            borderColor: filteredItems.length > 0 ? '#BBF7D0' : '#FECACA',
+            borderColor: filteredItems.length > 0 ? '#BBF7D0' : '#E2E8F0',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -279,12 +279,12 @@ export const DateRangePrintModal: FC<DateRangePrintModalProps> = ({
               sx={{
                 fontSize: '13px',
                 fontWeight: 700,
-                color: filteredItems.length > 0 ? '#166534' : '#991B1B',
+                color: filteredItems.length > 0 ? '#166534' : '#64748B',
               }}
             >
               {filteredItems.length} Records ready to print
             </Typography>
-            <Typography sx={{ fontSize: '11.5px', color: '#475569', mt: 0.2 }}>
+            <Typography sx={{ fontSize: '11.5px', color: '#64748B', mt: 0.2 }}>
               Format: Standard A4 • Clean Multi-Page Layout
             </Typography>
           </Box>
@@ -292,8 +292,8 @@ export const DateRangePrintModal: FC<DateRangePrintModalProps> = ({
             label={filteredItems.length > 0 ? 'Ready' : 'No Data'}
             size="small"
             sx={{
-              backgroundColor: filteredItems.length > 0 ? '#DCFCE7' : '#FEE2E2',
-              color: filteredItems.length > 0 ? '#15803D' : '#DC2626',
+              backgroundColor: filteredItems.length > 0 ? '#DCFCE7' : '#F1F5F9',
+              color: filteredItems.length > 0 ? '#15803D' : '#64748B',
               fontWeight: 700,
               fontSize: '11px',
             }}
@@ -312,15 +312,16 @@ export const DateRangePrintModal: FC<DateRangePrintModalProps> = ({
           disabled={filteredItems.length === 0}
           startIcon={<PrintOutlinedIcon sx={{ fontSize: 18 }} />}
           sx={{
-            background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+            background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
             color: '#FFFFFF',
             fontWeight: 700,
             textTransform: 'none',
             px: 2.5,
             borderRadius: '8px',
-            boxShadow: '0 2px 8px rgba(220, 38, 38, 0.3)',
+            border: '1.5px solid #FACC15',
+            boxShadow: '0 2px 8px rgba(29, 78, 216, 0.3)',
             '&:hover': {
-              background: 'linear-gradient(135deg, #B91C1C 0%, #991B1B 100%)',
+              background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
             },
           }}
         >

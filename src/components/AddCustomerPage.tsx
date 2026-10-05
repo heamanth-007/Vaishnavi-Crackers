@@ -50,8 +50,8 @@ export const AddCustomerPage: FC<AddCustomerPageProps> = ({
         gst: formData.gstin.trim() || 'N/A',
         address: formData.billingAddress.trim(),
         avatarLetter: formData.fullName.trim().charAt(0).toUpperCase(),
-        avatarBg: '#F1F5F9',
-        avatarColor: '#B91C1C',
+        avatarBg: '#EFF6FF',
+        avatarColor: '#1D4ED8',
       });
       if (onSubmitSuccess) {
         onSubmitSuccess();
@@ -80,7 +80,7 @@ export const AddCustomerPage: FC<AddCustomerPageProps> = ({
           sx={{
             fontSize: '28px',
             fontWeight: 800,
-            color: '#B91C1C',
+            color: '#0B0F19',
             letterSpacing: '-0.025em',
             lineHeight: 1.2,
             mb: 0.8,
@@ -145,9 +145,9 @@ export const AddCustomerPage: FC<AddCustomerPageProps> = ({
                   height: '42px',
                   transition: 'all 0.15s ease',
                   '&:focus-within': {
-                    borderColor: '#DC2626',
+                    borderColor: '#1D4ED8',
                     backgroundColor: '#FFFFFF',
-                    boxShadow: '0 0 0 3px rgba(220, 38, 38, 0.12)',
+                    boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.15)',
                   },
                 }}
               >
@@ -193,9 +193,9 @@ export const AddCustomerPage: FC<AddCustomerPageProps> = ({
                   height: '42px',
                   transition: 'all 0.15s ease',
                   '&:focus-within': {
-                    borderColor: '#DC2626',
+                    borderColor: '#1D4ED8',
                     backgroundColor: '#FFFFFF',
-                    boxShadow: '0 0 0 3px rgba(220, 38, 38, 0.12)',
+                    boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.15)',
                   },
                 }}
               >
@@ -241,9 +241,9 @@ export const AddCustomerPage: FC<AddCustomerPageProps> = ({
                   height: '42px',
                   transition: 'all 0.15s ease',
                   '&:focus-within': {
-                    borderColor: '#DC2626',
+                    borderColor: '#1D4ED8',
                     backgroundColor: '#FFFFFF',
-                    boxShadow: '0 0 0 3px rgba(220, 38, 38, 0.12)',
+                    boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.15)',
                   },
                 }}
               >
@@ -289,9 +289,9 @@ export const AddCustomerPage: FC<AddCustomerPageProps> = ({
                   height: '42px',
                   transition: 'all 0.15s ease',
                   '&:focus-within': {
-                    borderColor: '#DC2626',
+                    borderColor: '#1D4ED8',
                     backgroundColor: '#FFFFFF',
-                    boxShadow: '0 0 0 3px rgba(220, 38, 38, 0.12)',
+                    boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.15)',
                   },
                 }}
               >
@@ -340,8 +340,8 @@ export const AddCustomerPage: FC<AddCustomerPageProps> = ({
                 borderColor: '#E2E8F0',
                 textTransform: 'none',
                 '&:hover': {
-                  borderColor: '#D97706',
-                  backgroundColor: '#F8FAFC',
+                  borderColor: '#1D4ED8',
+                  backgroundColor: '#EFF6FF',
                 },
               }}
             >
@@ -362,13 +362,14 @@ export const AddCustomerPage: FC<AddCustomerPageProps> = ({
                 borderRadius: '8px',
                 fontSize: '13.5px',
                 fontWeight: 700,
-                background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+                background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
                 color: '#FFFFFF',
+                border: '1.5px solid #FACC15',
                 textTransform: 'none',
-                boxShadow: '0 2px 8px rgba(220, 38, 38, 0.3)',
+                boxShadow: '0 2px 8px rgba(29, 78, 216, 0.3)',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #B91C1C 0%, #991B1B 100%)',
-                  boxShadow: '0 4px 12px rgba(220, 38, 38, 0.4)',
+                  background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                  boxShadow: '0 4px 12px rgba(29, 78, 216, 0.4)',
                 },
               }}
             >

@@ -55,6 +55,7 @@ import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import Tesseract from 'tesseract.js';
 import { PriceListsApi, CategoriesApi, ProductsApi } from '../services/api';
 import { getStoredSettings } from './SettingsPage';
+import { formatProductCode } from '../utils/productUtils';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
@@ -62,6 +63,7 @@ export interface PriceItem {
   _id?: string;
   id?: string;
   slNo: number;
+  productCode?: string | number;
   itemName: string;
   category: string;
   unit: string;
@@ -215,12 +217,21 @@ export const PriceListPage: FC = () => {
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
       const matchesCat = selectedCategory === 'ALL' || item.category === selectedCategory;
-      const term = searchTerm.toLowerCase().trim();
+      const rawTerm = searchTerm.trim().replace(/^#+/, '');
+      if (!rawTerm) return matchesCat;
+      const term = rawTerm.toLowerCase();
+      const isNum = /^\d+$/.test(rawTerm);
+      if (isNum) {
+        const qNum = parseInt(rawTerm, 10);
+        const codeStr = formatProductCode(item.productCode || item.slNo);
+        const codeNum = parseInt(codeStr, 10);
+        const codeMatch = codeNum === qNum || codeStr === rawTerm || codeStr === rawTerm.padStart(3, '0');
+        return matchesCat && codeMatch;
+      }
       const matchesSearch =
-        !term ||
         item.itemName.toLowerCase().includes(term) ||
         (item.category && item.category.toLowerCase().includes(term)) ||
-        String(item.slNo).includes(term) ||
+        formatProductCode(item.productCode || item.slNo).toLowerCase().includes(term) ||
         String(item.rate).includes(term);
       return matchesCat && matchesSearch;
     });
@@ -418,11 +429,11 @@ export const PriceListPage: FC = () => {
           .trim();
       }
 
-      itemName = ensureEnglishText(itemName);
-
       if (itemName && itemName.length >= 2 && rate > 0) {
+        const finalSl = slNo || nextSlNo;
         parsed.push({
-          slNo: slNo || nextSlNo,
+          slNo: finalSl,
+          productCode: formatProductCode(finalSl),
           itemName,
           category: ensureEnglishText(currentCategory) || 'General',
           unit: unit || 'Box',
@@ -744,8 +755,10 @@ export const PriceListPage: FC = () => {
 
         // Validate product
         if (itemName && itemName.length >= 2 && !isTitleNoise(itemName) && (itemRate > 0 || itemMrp > 0)) {
+          const finalSl = itemSlNo || globalSlNo;
           allParsedItems.push({
-            slNo: itemSlNo || globalSlNo,
+            slNo: finalSl,
+            productCode: formatProductCode(finalSl),
             itemName,
             category: itemCat || currentCategory || 'General',
             unit: itemUnit || 'Box',
@@ -963,6 +976,7 @@ export const PriceListPage: FC = () => {
       ...prev,
       {
         slNo: nextSl,
+        productCode: formatProductCode(nextSl),
         itemName: '',
         category: categories[0]?.name || 'One Sound Crackers',
         unit: 'Box',
@@ -1187,7 +1201,7 @@ export const PriceListPage: FC = () => {
     const cleanPrefix = compName.replace(/[^a-zA-Z0-9_-]/g, '_');
 
     const exportData = filteredItems.map((item, idx) => ({
-      'SL.NO': item.slNo || idx + 1,
+      'PRODUCT CODE': formatProductCode(item.productCode || item.slNo, idx + 1),
       'Item Name': item.itemName,
       Category: item.category,
       Unit: item.unit,
@@ -1223,7 +1237,7 @@ export const PriceListPage: FC = () => {
         <td style="text-align: center; border: 1px solid #ddd; padding: 6px 8px;">${item.unit || 'Box'}</td>
         <td style="text-align: right; border: 1px solid #ddd; padding: 6px 8px; color: #888;">₹${Number(item.mrp || 0).toFixed(2)}</td>
         <td style="text-align: center; border: 1px solid #ddd; padding: 6px 8px;">${item.discountPercent ? `${item.discountPercent}%` : '—'}</td>
-        <td style="text-align: right; border: 1px solid #ddd; padding: 6px 10px; font-weight: 700; color: #b91c1c;">₹${Number(item.rate || 0).toFixed(2)}</td>
+        <td style="text-align: right; border: 1px solid #ddd; padding: 6px 10px; font-weight: 700; color: #1d4ed8;">₹${Number(item.rate || 0).toFixed(2)}</td>
       </tr>
     `
       )
@@ -1236,8 +1250,8 @@ export const PriceListPage: FC = () => {
         <title>${compName} - Price List</title>
         <style>
           body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; color: #1f2937; }
-          .header { text-align: center; border-bottom: 2px solid #dc2626; padding-bottom: 12px; margin-bottom: 16px; }
-          .title { font-size: 24px; font-weight: bold; color: #b91c1c; margin: 0; }
+          .header { text-align: center; border-bottom: 2px solid #eab308; padding-bottom: 12px; margin-bottom: 16px; }
+          .title { font-size: 24px; font-weight: bold; color: #0b0f19; margin: 0; }
           .subtitle { font-size: 13px; color: #d97706; font-weight: bold; text-transform: uppercase; margin-top: 4px; }
           .meta { display: flex; justify-content: space-between; font-size: 12px; color: #6b7280; margin-bottom: 12px; }
           table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -1264,7 +1278,7 @@ export const PriceListPage: FC = () => {
         <table>
           <thead>
             <tr>
-              <th class="center" style="width: 50px;">SL.NO</th>
+              <th class="center" style="width: 80px;">PRODUCT CODE</th>
               <th>ITEM NAME</th>
               <th>CATEGORY</th>
               <th class="center" style="width: 70px;">UNIT</th>
@@ -1436,8 +1450,8 @@ export const PriceListPage: FC = () => {
           sx={{
             p: { xs: 2, sm: 3 },
             borderRadius: '14px',
-            border: isDragging ? '2px dashed #DC2626' : '1.5px dashed #F59E0B',
-            backgroundColor: isDragging ? '#FEF2F2' : '#FFFDF5',
+            border: isDragging ? '2px dashed #1D4ED8' : '1.5px dashed #EAB308',
+            backgroundColor: isDragging ? '#EFF6FF' : '#FFFDF5',
             boxShadow: '0 4px 20px -2px rgba(0, 0, 0, 0.04)',
             transition: 'all 0.2s ease',
           }}
@@ -1458,12 +1472,12 @@ export const PriceListPage: FC = () => {
                     width: 54,
                     height: 54,
                     borderRadius: '12px',
-                    backgroundColor: '#DC2626',
-                    color: '#FEF08A',
+                    backgroundColor: '#1D4ED8',
+                    color: '#FACC15',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    boxShadow: '0 4px 12px rgba(220, 38, 38, 0.25)',
+                    boxShadow: '0 4px 12px rgba(29, 78, 216, 0.25)',
                     flexShrink: 0,
                   }}
                 >
@@ -1471,7 +1485,7 @@ export const PriceListPage: FC = () => {
                 </Box>
                 <Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                    <Typography sx={{ fontSize: '17px', fontWeight: 800, color: '#991B1B' }}>
+                    <Typography sx={{ fontSize: '17px', fontWeight: 800, color: '#0B0F19' }}>
                       Upload Price List
                     </Typography>
                     <Chip
@@ -1554,7 +1568,7 @@ export const PriceListPage: FC = () => {
                   onClick={() => fileInputRef.current?.click()}
                   startIcon={<CloudUploadRoundedIcon sx={{ fontSize: 18 }} />}
                   sx={{
-                    background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+                    background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
                     color: '#FFFFFF',
                     fontSize: '13px',
                     fontWeight: 800,
@@ -1562,9 +1576,10 @@ export const PriceListPage: FC = () => {
                     px: 2.5,
                     py: 1,
                     borderRadius: '8px',
-                    boxShadow: '0 2px 8px rgba(220, 38, 38, 0.3)',
+                    border: '1.5px solid #FACC15',
+                    boxShadow: '0 2px 8px rgba(29, 78, 216, 0.3)',
                     '&:hover': {
-                      background: 'linear-gradient(135deg, #B91C1C 0%, #991B1B 100%)',
+                      background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
                     },
                   }}
                 >
@@ -1585,14 +1600,14 @@ export const PriceListPage: FC = () => {
             onClick={() => setActiveViewMode('table')}
             startIcon={<TableChartRoundedIcon sx={{ fontSize: 18 }} />}
             sx={{
-              backgroundColor: activeViewMode === 'table' ? '#B91C1C' : '#FFFFFF',
+              backgroundColor: activeViewMode === 'table' ? '#1D4ED8' : '#FFFFFF',
               color: activeViewMode === 'table' ? '#FFFFFF' : '#475569',
               borderColor: '#E2E8F0',
               fontWeight: 700,
               fontSize: '13px',
               textTransform: 'none',
               borderRadius: '8px',
-              '&:hover': { backgroundColor: activeViewMode === 'table' ? '#991B1B' : '#F8FAFC' },
+              '&:hover': { backgroundColor: activeViewMode === 'table' ? '#1E40AF' : '#F8FAFC' },
             }}
           >
             Price List Table ({items.length})
@@ -1604,14 +1619,14 @@ export const PriceListPage: FC = () => {
             onClick={() => setActiveViewMode('documents')}
             startIcon={<PictureAsPdfRoundedIcon sx={{ fontSize: 18 }} />}
             sx={{
-              backgroundColor: activeViewMode === 'documents' ? '#B91C1C' : '#FFFFFF',
+              backgroundColor: activeViewMode === 'documents' ? '#1D4ED8' : '#FFFFFF',
               color: activeViewMode === 'documents' ? '#FFFFFF' : '#475569',
               borderColor: '#E2E8F0',
               fontWeight: 700,
               fontSize: '13px',
               textTransform: 'none',
               borderRadius: '8px',
-              '&:hover': { backgroundColor: activeViewMode === 'documents' ? '#991B1B' : '#F8FAFC' },
+              '&:hover': { backgroundColor: activeViewMode === 'documents' ? '#1E40AF' : '#F8FAFC' },
             }}
           >
             Uploaded PDFs & Images ({uploadedDocs.length})
@@ -1625,17 +1640,17 @@ export const PriceListPage: FC = () => {
           onClick={() => setShowUploadZone((prev) => !prev)}
           startIcon={<CloudUploadRoundedIcon sx={{ fontSize: 18 }} />}
           sx={{
-            backgroundColor: showUploadZone ? '#DC2626' : '#FFFFFF',
+            backgroundColor: showUploadZone ? '#1D4ED8' : '#FFFFFF',
             color: showUploadZone ? '#FFFFFF' : '#334155',
             borderColor: '#E2E8F0',
             fontWeight: 700,
             fontSize: '13px',
             textTransform: 'none',
             borderRadius: '8px',
-            boxShadow: showUploadZone ? '0 2px 6px rgba(220,38,38,0.25)' : 'none',
+            boxShadow: showUploadZone ? '0 2px 6px rgba(29, 78, 216, 0.25)' : 'none',
             '&:hover': {
-              backgroundColor: showUploadZone ? '#B91C1C' : '#F8FAFC',
-              borderColor: '#F59E0B',
+              backgroundColor: showUploadZone ? '#1E40AF' : '#F8FAFC',
+              borderColor: '#EAB308',
             },
           }}
         >
@@ -1667,8 +1682,8 @@ export const PriceListPage: FC = () => {
             {/* Festive Red Top Banner */}
             <Box
               sx={{
-                background: 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)',
-                borderBottom: '2px solid #F59E0B',
+                background: 'linear-gradient(135deg, #0B0F19 0%, #111827 40%, #1E3A8A 100%)',
+                borderBottom: '2.5px solid #EAB308',
                 borderTopLeftRadius: '13px',
                 borderTopRightRadius: '13px',
                 px: { xs: 2, sm: 3 },
@@ -1695,11 +1710,11 @@ export const PriceListPage: FC = () => {
                 </Typography>
                 <Typography
                   sx={{
-                    color: '#FEF08A',
+                    color: '#FACC15',
                     fontSize: '12px',
                     fontWeight: 700,
-                    backgroundColor: 'rgba(254, 240, 138, 0.2)',
-                    border: '1px solid rgba(254, 240, 138, 0.35)',
+                    backgroundColor: 'rgba(250, 204, 21, 0.15)',
+                    border: '1px solid rgba(250, 204, 21, 0.4)',
                     px: 1.2,
                     py: 0.3,
                     borderRadius: '12px',
@@ -1733,7 +1748,7 @@ export const PriceListPage: FC = () => {
                     boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
                   }}
                 >
-                  <SearchRoundedIcon sx={{ color: '#D97706', fontSize: 19, mr: 0.8, flexShrink: 0 }} />
+                  <SearchRoundedIcon sx={{ color: '#1D4ED8', fontSize: 19, mr: 0.8, flexShrink: 0 }} />
                   <InputBase
                     placeholder="Search item / rate..."
                     value={searchTerm}
@@ -1842,19 +1857,19 @@ export const PriceListPage: FC = () => {
                   onClick={handleOpenAdd}
                   startIcon={<AddRoundedIcon sx={{ fontSize: 18 }} />}
                   sx={{
-                    backgroundColor: '#FFFFFF',
-                    color: '#B91C1C',
-                    border: '1.5px solid #E2E8F0',
+                    backgroundColor: '#FACC15',
+                    color: '#0B0F19',
+                    border: '1.5px solid #EAB308',
                     fontSize: '13px',
                     fontWeight: 800,
                     textTransform: 'none',
                     px: 2,
                     height: '38px',
                     borderRadius: '8px',
-                    boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+                    boxShadow: '0 2px 8px rgba(234, 179, 8, 0.3)',
                     whiteSpace: 'nowrap',
                     '&:hover': {
-                      backgroundColor: '#F8FAFC',
+                      backgroundColor: '#EAB308',
                     },
                   }}
                 >
@@ -1890,11 +1905,11 @@ export const PriceListPage: FC = () => {
                   fontWeight: 700,
                   fontSize: '12px',
                   cursor: 'pointer',
-                  backgroundColor: selectedCategory === 'ALL' ? '#B91C1C' : '#FFFFFF',
+                  backgroundColor: selectedCategory === 'ALL' ? '#1D4ED8' : '#FFFFFF',
                   color: selectedCategory === 'ALL' ? '#FFFFFF' : '#475569',
-                  border: selectedCategory === 'ALL' ? '1px solid #991B1B' : '1px solid #E2E8F0',
+                  border: selectedCategory === 'ALL' ? '1px solid #1E40AF' : '1px solid #E2E8F0',
                   '&:hover': {
-                    backgroundColor: selectedCategory === 'ALL' ? '#991B1B' : '#F1F5F9',
+                    backgroundColor: selectedCategory === 'ALL' ? '#1E40AF' : '#F1F5F9',
                   },
                 }}
               />
@@ -1912,11 +1927,11 @@ export const PriceListPage: FC = () => {
                       fontWeight: 700,
                       fontSize: '12px',
                       cursor: 'pointer',
-                      backgroundColor: isSelected ? '#B91C1C' : '#FFFFFF',
-                      color: isSelected ? '#FFFFFF' : '#57463A',
-                      border: isSelected ? '1px solid #991B1B' : '1px solid #E5E7EB',
+                      backgroundColor: isSelected ? '#1D4ED8' : '#FFFFFF',
+                      color: isSelected ? '#FFFFFF' : '#334155',
+                      border: isSelected ? '1px solid #1E40AF' : '1px solid #E5E7EB',
                       '&:hover': {
-                        backgroundColor: isSelected ? '#991B1B' : '#F3F4F6',
+                        backgroundColor: isSelected ? '#1E40AF' : '#F3F4F6',
                       },
                     }}
                   />
@@ -1930,12 +1945,16 @@ export const PriceListPage: FC = () => {
                     onClick={handleClearAll}
                     sx={{
                       ml: 'auto',
-                      color: '#DC2626',
-                      backgroundColor: '#FEF2F2',
-                      border: '1px solid #FECACA',
+                      color: '#64748B',
+                      backgroundColor: '#F8FAFC',
+                      border: '1px solid #E2E8F0',
                       borderRadius: '6px',
                       p: 0.5,
-                      '&:hover': { backgroundColor: '#FEE2E2' },
+                      '&:hover': {
+                        color: '#B45309',
+                        backgroundColor: '#FEF3C7',
+                        borderColor: '#FDE68A',
+                      },
                     }}
                   >
                     <DeleteSweepRoundedIcon sx={{ fontSize: 18 }} />
@@ -1968,10 +1987,10 @@ export const PriceListPage: FC = () => {
                       letterSpacing: '0.04em',
                       backgroundColor: '#F8FAFC',
                       borderBottom: '2px solid #E2E8F0',
-                      width: '70px',
+                      width: '100px',
                     }}
                   >
-                    SL.NO
+                    PRODUCT CODE
                   </TableCell>
                   <TableCell
                     sx={{
@@ -2104,7 +2123,7 @@ export const PriceListPage: FC = () => {
                 {loading ? (
                   <TableRow>
                     <TableCell colSpan={9} align="center" sx={{ py: 6 }}>
-                      <CircularProgress size={32} sx={{ color: '#DC2626' }} />
+                      <CircularProgress size={32} sx={{ color: '#1D4ED8' }} />
                     </TableCell>
                   </TableRow>
                 ) : filteredItems.length === 0 ? (
@@ -2118,7 +2137,7 @@ export const PriceListPage: FC = () => {
                           <Button
                             size="small"
                             onClick={() => setSearchTerm('')}
-                            sx={{ textTransform: 'none', color: '#B91C1C', fontWeight: 700 }}
+                            sx={{ textTransform: 'none', color: '#1D4ED8', fontWeight: 700 }}
                           >
                             Clear Search
                           </Button>
@@ -2144,22 +2163,39 @@ export const PriceListPage: FC = () => {
                         key={item._id || item.id || index}
                         sx={{
                           '&:hover': {
-                            backgroundColor: '#FEFDF5',
+                            backgroundColor: '#F8FAFC',
                           },
                         }}
                       >
-                        {/* Sl. No */}
+                        {/* Product Code */}
                         <TableCell
                           sx={{
                             py: 1.4,
                             px: { xs: 2, sm: 3 },
                             fontSize: '13.5px',
                             fontWeight: 700,
-                            color: '#786C58',
+                            color: '#1D4ED8',
                             borderBottom: isLast ? 'none' : '1px solid #F1F5F9',
                           }}
                         >
-                          {item.slNo || index + 1}
+                          <Box
+                            sx={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              backgroundColor: '#EFF6FF',
+                              color: '#1D4ED8',
+                              border: '1px solid #BFDBFE',
+                              borderRadius: '6px',
+                              px: 1,
+                              py: 0.3,
+                              fontWeight: 800,
+                              fontSize: '12px',
+                              minWidth: '36px',
+                            }}
+                          >
+                            {formatProductCode(item.productCode || item.slNo, index + 1)}
+                          </Box>
                         </TableCell>
 
                         {/* Item Name */}
@@ -2252,7 +2288,7 @@ export const PriceListPage: FC = () => {
                             px: { xs: 2, sm: 3 },
                             fontSize: '14.5px',
                             fontWeight: 800,
-                            color: '#B91C1C',
+                            color: '#1D4ED8',
                             borderBottom: isLast ? 'none' : '1px solid #F1F5F9',
                           }}
                         >
@@ -2304,15 +2340,16 @@ export const PriceListPage: FC = () => {
                               size="small"
                               onClick={() => handleDeleteItem(item)}
                               sx={{
-                                color: '#DC2626',
-                                backgroundColor: '#FEF2F2',
-                                border: '1px solid #FECACA',
+                                color: '#64748B',
+                                backgroundColor: '#F8FAFC',
+                                border: '1px solid #E2E8F0',
                                 borderRadius: '6px',
                                 p: 0.6,
+                                transition: 'all 0.15s ease',
                                 '&:hover': {
-                                  color: '#FFFFFF',
-                                  backgroundColor: '#DC2626',
-                                  borderColor: '#DC2626',
+                                  color: '#B45309',
+                                  backgroundColor: '#FEF3C7',
+                                  borderColor: '#FDE68A',
                                 },
                               }}
                             >
@@ -2345,10 +2382,10 @@ export const PriceListPage: FC = () => {
         >
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2.5 }}>
             <Box>
-              <Typography sx={{ fontSize: '18px', fontWeight: 800, color: '#B91C1C' }}>
+              <Typography sx={{ fontSize: '18px', fontWeight: 800, color: '#0B0F19' }}>
                 Uploaded Price Documents & Rate Cards
               </Typography>
-              <Typography sx={{ fontSize: '13px', color: '#786C58' }}>
+              <Typography sx={{ fontSize: '13px', color: '#64748B' }}>
                 Access and view all your uploaded price sheet PDFs, images, and rate cards anytime.
               </Typography>
             </Box>
@@ -2358,11 +2395,13 @@ export const PriceListPage: FC = () => {
               onClick={() => fileInputRef.current?.click()}
               startIcon={<CloudUploadRoundedIcon />}
               sx={{
-                background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+                background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
                 color: '#FFFFFF',
                 fontWeight: 700,
                 textTransform: 'none',
                 borderRadius: '8px',
+                border: '1.5px solid #FACC15',
+                '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' },
               }}
             >
               Upload New Document
@@ -2406,9 +2445,9 @@ export const PriceListPage: FC = () => {
                           width: 44,
                           height: 44,
                           borderRadius: '10px',
-                          backgroundColor: doc.type === 'pdf' ? '#FEF2F2' : doc.type === 'image' ? '#EFF6FF' : '#ECFDF5',
-                          color: doc.type === 'pdf' ? '#DC2626' : doc.type === 'image' ? '#2563EB' : '#059669',
-                          border: `1px solid ${doc.type === 'pdf' ? '#FECACA' : doc.type === 'image' ? '#BFDBFE' : '#A7F3D0'}`,
+                          backgroundColor: doc.type === 'pdf' ? '#EEF2FF' : doc.type === 'image' ? '#EFF6FF' : '#ECFDF5',
+                          color: doc.type === 'pdf' ? '#4F46E5' : doc.type === 'image' ? '#2563EB' : '#059669',
+                          border: `1px solid ${doc.type === 'pdf' ? '#C7D2FE' : doc.type === 'image' ? '#BFDBFE' : '#A7F3D0'}`,
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -2478,7 +2517,7 @@ export const PriceListPage: FC = () => {
                       <IconButton
                         size="small"
                         onClick={() => handleDeleteDoc(doc.id)}
-                        sx={{ color: '#DC2626', p: 0.6, '&:hover': { backgroundColor: '#FEF2F2' } }}
+                        sx={{ color: '#64748B', p: 0.6, '&:hover': { color: '#B45309', backgroundColor: '#FEF3C7' } }}
                       >
                         <DeleteOutlineRoundedIcon sx={{ fontSize: 18 }} />
                       </IconButton>
@@ -2513,19 +2552,19 @@ export const PriceListPage: FC = () => {
               width: 60,
               height: 60,
               borderRadius: '50%',
-              backgroundColor: '#FEF2F2',
+              backgroundColor: '#EFF6FF',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#DC2626',
+              color: '#1D4ED8',
             }}
           >
             <AutoFixHighRoundedIcon sx={{ fontSize: 32 }} />
           </Box>
-          <Typography sx={{ fontSize: '17px', fontWeight: 800, color: '#991B1B' }}>
+          <Typography sx={{ fontSize: '17px', fontWeight: 800, color: '#0B0F19' }}>
             AI OCR Scanning Rate Card...
           </Typography>
-          <Typography sx={{ fontSize: '13px', color: '#786C58' }}>
+          <Typography sx={{ fontSize: '13px', color: '#64748B' }}>
             {ocrStatusText || 'Extracting products, categories, and rates from document...'}
           </Typography>
           <Box sx={{ width: '100%', mt: 1 }}>
@@ -2536,7 +2575,7 @@ export const PriceListPage: FC = () => {
                 height: 8,
                 borderRadius: 4,
                 backgroundColor: '#E2E8F0',
-                '& .MuiLinearProgress-bar': { backgroundColor: '#DC2626' },
+                '& .MuiLinearProgress-bar': { backgroundColor: '#1D4ED8' },
               }}
             />
             <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#334155', mt: 0.8, textAlign: 'right' }}>
@@ -2562,7 +2601,7 @@ export const PriceListPage: FC = () => {
           },
         }}
       >
-        <DialogTitle sx={{ fontSize: '18px', fontWeight: 800, color: '#B91C1C', pb: 0.5 }}>
+        <DialogTitle sx={{ fontSize: '18px', fontWeight: 800, color: '#0B0F19', pb: 0.5 }}>
           Paste Price List Text (WhatsApp / Notes / SMS)
         </DialogTitle>
         <DialogContent sx={{ pt: '10px !important' }}>
@@ -2607,13 +2646,14 @@ SPARKLERS
             onClick={handleExtractFromPasteText}
             startIcon={<AutoFixHighRoundedIcon />}
             sx={{
-              background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+              background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
               color: '#FFFFFF',
+              border: '1.5px solid #FACC15',
               fontWeight: 800,
               textTransform: 'none',
               px: 3,
               borderRadius: '8px',
-              '&:hover': { background: 'linear-gradient(135deg, #B91C1C 0%, #991B1B 100%)' },
+              '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' },
             }}
           >
             Extract & Sync Products
@@ -2637,7 +2677,7 @@ SPARKLERS
           },
         }}
       >
-        <DialogTitle sx={{ fontSize: '18px', fontWeight: 800, color: '#B91C1C', pb: 0.5 }}>
+        <DialogTitle sx={{ fontSize: '18px', fontWeight: 800, color: '#0B0F19', pb: 0.5 }}>
           Preview & Edit Detected Price Items ({previewItems.length} Products Found)
         </DialogTitle>
         <DialogContent sx={{ pt: '10px !important' }}>
@@ -2679,7 +2719,7 @@ SPARKLERS
                   />
                 }
                 label={
-                  <Typography sx={{ fontSize: '13px', fontWeight: 700, color: '#DC2626' }}>
+                  <Typography sx={{ fontSize: '13px', fontWeight: 700, color: '#1D4ED8' }}>
                     Replace existing price list (Uncheck to merge/append into current catalog)
                   </Typography>
                 }
@@ -2698,7 +2738,7 @@ SPARKLERS
             <Table size="small" stickyHeader>
               <TableHead sx={{ backgroundColor: '#F9FAFB' }}>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 700, fontSize: '11.5px', width: '60px' }}>SL</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontSize: '11.5px', width: '90px', color: '#0B0F19' }}>PRODUCT CODE</TableCell>
                   <TableCell sx={{ fontWeight: 700, fontSize: '11.5px', minWidth: '220px' }}>
                     ITEM / PRODUCT NAME *
                   </TableCell>
@@ -2707,7 +2747,7 @@ SPARKLERS
                   </TableCell>
                   <TableCell sx={{ fontWeight: 700, fontSize: '11.5px', width: '90px' }}>UNIT</TableCell>
                   <TableCell sx={{ fontWeight: 700, fontSize: '11.5px', width: '100px' }}>MRP (₹)</TableCell>
-                  <TableCell sx={{ fontWeight: 700, fontSize: '11.5px', width: '110px', color: '#B91C1C' }}>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '11.5px', width: '110px', color: '#1D4ED8' }}>
                     RATE (₹) *
                   </TableCell>
                   <TableCell align="center" sx={{ fontWeight: 700, fontSize: '11.5px', width: '50px' }}>
@@ -2718,8 +2758,8 @@ SPARKLERS
               <TableBody>
                 {previewItems.map((p, i) => (
                   <TableRow key={i} sx={{ '&:hover': { backgroundColor: '#FFFFFF' } }}>
-                    <TableCell sx={{ fontSize: '12px', color: '#6B7280' }}>
-                      {p.slNo || i + 1}
+                    <TableCell sx={{ fontSize: '12px', fontWeight: 800, color: '#1D4ED8' }}>
+                      {formatProductCode(p.productCode || p.slNo, i + 1)}
                     </TableCell>
                     <TableCell>
                       <TextField
@@ -2776,7 +2816,7 @@ SPARKLERS
                         onChange={(e) => handleUpdatePreviewItem(i, 'rate', Number(e.target.value))}
                         slotProps={{
                           input: {
-                            sx: { fontSize: '13px', fontWeight: 800, color: '#B91C1C' },
+                            sx: { fontSize: '13px', fontWeight: 800, color: '#1D4ED8' },
                           },
                         }}
                       />
@@ -2785,7 +2825,7 @@ SPARKLERS
                       <IconButton
                         size="small"
                         onClick={() => handleDeletePreviewItem(i)}
-                        sx={{ color: '#DC2626', p: 0.4 }}
+                        sx={{ color: '#64748B', p: 0.4, '&:hover': { color: '#B45309' } }}
                       >
                         <DeleteOutlineRoundedIcon sx={{ fontSize: 18 }} />
                       </IconButton>
@@ -2810,7 +2850,7 @@ SPARKLERS
             >
               + Add Another Product Row
             </Button>
-            <Typography sx={{ fontSize: '13px', fontWeight: 700, color: '#991B1B' }}>
+            <Typography sx={{ fontSize: '13px', fontWeight: 700, color: '#1D4ED8' }}>
               Total: {previewItems.length} Products ready to sync
             </Typography>
           </Box>
@@ -2832,15 +2872,16 @@ SPARKLERS
               uploading ? <CircularProgress size={16} color="inherit" /> : <CloudUploadRoundedIcon />
             }
             sx={{
-              background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+              background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
               color: '#FFFFFF',
+              border: '1.5px solid #FACC15',
               fontWeight: 800,
               fontSize: '14px',
               textTransform: 'none',
               px: 3.5,
               py: 1,
               borderRadius: '8px',
-              '&:hover': { background: 'linear-gradient(135deg, #B91C1C 0%, #991B1B 100%)' },
+              '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' },
             }}
           >
             {uploading
@@ -2868,7 +2909,7 @@ SPARKLERS
             },
           }}
         >
-          <DialogTitle sx={{ fontSize: '18px', fontWeight: 800, color: '#B91C1C', pb: 0.5 }}>
+          <DialogTitle sx={{ fontSize: '18px', fontWeight: 800, color: '#0B0F19', pb: 0.5 }}>
             Upload Rate Card ({pendingDocUpload.type === 'pdf' ? 'PDF Document' : 'Photo / Image'})
           </DialogTitle>
           <DialogContent sx={{ pt: '10px !important' }}>
@@ -2987,7 +3028,7 @@ SPARKLERS
                     type="number"
                     value={quickRate}
                     onChange={(e) => setQuickRate(e.target.value)}
-                    slotProps={{ input: { sx: { fontSize: '12.5px', fontWeight: 700, color: '#B91C1C' } } }}
+                    slotProps={{ input: { sx: { fontSize: '12.5px', fontWeight: 700, color: '#1D4ED8' } } }}
                   />
                 </Grid>
                 <Grid size={{ xs: 3, sm: 1.5 }}>
@@ -3037,13 +3078,14 @@ SPARKLERS
               onClick={handleConfirmDocUpload}
               startIcon={<CloudUploadRoundedIcon />}
               sx={{
-                background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+                background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
                 color: '#FFFFFF',
+                border: '1.5px solid #FACC15',
                 fontWeight: 800,
                 textTransform: 'none',
                 px: 3,
                 borderRadius: '8px',
-                '&:hover': { background: 'linear-gradient(135deg, #B91C1C 0%, #991B1B 100%)' },
+                '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' },
               }}
             >
               Confirm & Upload Rate Card
@@ -3075,8 +3117,8 @@ SPARKLERS
           {/* Header */}
           <Box
             sx={{
-              background: 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)',
-              borderBottom: '2px solid #F59E0B',
+              background: 'linear-gradient(135deg, #0B0F19 0%, #111827 40%, #1E3A8A 100%)',
+              borderBottom: '2.5px solid #EAB308',
               px: 3,
               py: 1.5,
               display: 'flex',
@@ -3187,11 +3229,14 @@ SPARKLERS
                 size="small"
                 onClick={() => setViewDocModalOpen(false)}
                 sx={{
-                  background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+                  background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
+                  color: '#FFFFFF',
+                  border: '1px solid #FACC15',
                   fontWeight: 700,
                   textTransform: 'none',
                   borderRadius: '6px',
                   px: 2.5,
+                  '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' },
                 }}
               >
                 Done / Close
@@ -3217,14 +3262,14 @@ SPARKLERS
           },
         }}
       >
-        <DialogTitle sx={{ fontSize: '18px', fontWeight: 800, color: '#B91C1C', pb: 1 }}>
+        <DialogTitle sx={{ fontSize: '18px', fontWeight: 800, color: '#0B0F19', pb: 1 }}>
           {editingItem ? 'Edit Price Item' : 'Add Price List Item'}
         </DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '10px !important' }}>
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, sm: 4 }}>
               <Typography sx={{ fontSize: '13px', fontWeight: 700, color: '#786C58', mb: 0.6 }}>
-                Sl No
+                Product Code
               </Typography>
               <TextField
                 fullWidth
@@ -3318,7 +3363,7 @@ SPARKLERS
             </Grid>
 
             <Grid size={{ xs: 6, sm: 3 }}>
-              <Typography sx={{ fontSize: '13px', fontWeight: 700, color: '#B91C1C', mb: 0.6 }}>
+              <Typography sx={{ fontSize: '13px', fontWeight: 700, color: '#1D4ED8', mb: 0.6 }}>
                 Net Rate (₹) *
               </Typography>
               <TextField
@@ -3327,7 +3372,7 @@ SPARKLERS
                 type="number"
                 value={formRate}
                 onChange={(e) => setFormRate(e.target.value)}
-                slotProps={{ input: { sx: { fontSize: '14px', fontWeight: 800, color: '#B91C1C' } } }}
+                slotProps={{ input: { sx: { fontSize: '14px', fontWeight: 800, color: '#1D4ED8' } } }}
               />
             </Grid>
           </Grid>
@@ -3345,13 +3390,14 @@ SPARKLERS
             onClick={handleSaveItem}
             disabled={savingItem}
             sx={{
-              background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+              background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
               color: '#FFFFFF',
+              border: '1.5px solid #FACC15',
               fontWeight: 700,
               textTransform: 'none',
               px: 3,
               borderRadius: '8px',
-              '&:hover': { background: 'linear-gradient(135deg, #B91C1C 0%, #991B1B 100%)' },
+              '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' },
             }}
           >
             {savingItem ? 'Saving...' : editingItem ? 'Update Price' : 'Add to Price List'}

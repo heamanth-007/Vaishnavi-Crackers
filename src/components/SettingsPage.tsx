@@ -452,8 +452,8 @@ export const SettingsPage: React.FC = () => {
         {/* Festive Crimson & Gold Header Banner */}
         <Box
           sx={{
-            background: 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)',
-            borderBottom: '2px solid #F59E0B',
+            background: 'linear-gradient(135deg, #0B0F19 0%, #111827 40%, #1E3A8A 100%)',
+            borderBottom: '2.5px solid #EAB308',
             px: { xs: 2, sm: 3 },
             py: 1.2,
             display: 'flex',
@@ -477,7 +477,7 @@ export const SettingsPage: React.FC = () => {
                 justifyContent: 'center',
               }}
             >
-              <BusinessRoundedIcon sx={{ color: '#FEF08A', fontSize: 22 }} />
+              <BusinessRoundedIcon sx={{ color: '#FACC15', fontSize: 22 }} />
             </Box>
             <Box>
               <Typography
@@ -491,7 +491,7 @@ export const SettingsPage: React.FC = () => {
               >
                 Company Profile & Settings
               </Typography>
-              <Typography sx={{ color: '#FEF08A', fontSize: '11.5px', fontWeight: 600 }}>
+              <Typography sx={{ color: '#FACC15', fontSize: '11.5px', fontWeight: 600 }}>
                 Configure store identity, logo upload, and bill invoice header details
               </Typography>
             </Box>
@@ -504,8 +504,8 @@ export const SettingsPage: React.FC = () => {
               onClick={handleResetToDefault}
               startIcon={<RestartAltRoundedIcon sx={{ fontSize: 18 }} />}
               sx={{
-                color: '#FEF08A',
-                borderColor: 'rgba(254, 240, 138, 0.5)',
+                color: '#FACC15',
+                borderColor: 'rgba(250, 204, 21, 0.5)',
                 borderRadius: '8px',
                 fontSize: '13px',
                 fontWeight: 700,
@@ -513,7 +513,7 @@ export const SettingsPage: React.FC = () => {
                 px: 2,
                 height: '36px',
                 '&:hover': {
-                  borderColor: '#FEF08A',
+                  borderColor: '#FACC15',
                   backgroundColor: 'rgba(255, 255, 255, 0.12)',
                 },
               }}
@@ -526,20 +526,20 @@ export const SettingsPage: React.FC = () => {
               disableElevation
               disabled={isSaving}
               onClick={handleSave}
-              startIcon={isSaving ? <CircularProgress size={18} sx={{ color: '#B91C1C' }} /> : <SaveRoundedIcon sx={{ fontSize: 18 }} />}
+              startIcon={isSaving ? <CircularProgress size={18} sx={{ color: '#0B0F19' }} /> : <SaveRoundedIcon sx={{ fontSize: 18 }} />}
               sx={{
-                backgroundColor: '#FFFFFF',
-                color: '#B91C1C',
-                border: '1.5px solid #E2E8F0',
+                backgroundColor: '#FACC15',
+                color: '#0B0F19',
+                border: '1.5px solid #EAB308',
                 borderRadius: '8px',
                 fontSize: '13px',
                 fontWeight: 800,
                 textTransform: 'none',
                 px: 2.5,
                 height: '36px',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                boxShadow: '0 2px 8px rgba(234, 179, 8, 0.3)',
                 '&:hover': {
-                  backgroundColor: '#F8FAFC',
+                  backgroundColor: '#EAB308',
                 },
                 '&.Mui-disabled': {
                   backgroundColor: '#F3F4F6',
@@ -588,7 +588,7 @@ export const SettingsPage: React.FC = () => {
                 textAlign: 'center',
               }}
             >
-              <Typography sx={{ fontSize: '15px', fontWeight: 800, color: '#991B1B', mb: 0.3 }}>
+              <Typography sx={{ fontSize: '15px', fontWeight: 800, color: '#0B0F19', mb: 0.3 }}>
                 Company Logo
               </Typography>
               <Typography sx={{ fontSize: '11.5px', color: '#786C58', mb: 1.5 }}>
@@ -615,11 +615,11 @@ export const SettingsPage: React.FC = () => {
                   height: '170px',
                   borderRadius: '10px',
                   border: isDraggingLogo
-                    ? '2.5px dashed #DC2626'
+                    ? '2.5px dashed #1D4ED8'
                     : settings.logoUrl
                     ? '1.5px solid #E2E8F0'
-                    : '2px dashed #D97706',
-                  backgroundColor: isDraggingLogo ? '#FEF2F2' : settings.logoUrl ? '#FFFFFF' : '#F8FAFC',
+                    : '2px dashed #EAB308',
+                  backgroundColor: isDraggingLogo ? '#EFF6FF' : settings.logoUrl ? '#FFFFFF' : '#F8FAFC',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
@@ -630,8 +630,8 @@ export const SettingsPage: React.FC = () => {
                   position: 'relative',
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    borderColor: '#DC2626',
-                    backgroundColor: '#FFF5F5',
+                    borderColor: '#1D4ED8',
+                    backgroundColor: '#F8FAFC',
                   },
                 }}
               >
@@ -655,7 +655,7 @@ export const SettingsPage: React.FC = () => {
                         height: 48,
                         borderRadius: '50%',
                         backgroundColor: '#F1F5F9',
-                        color: '#B91C1C',
+                        color: '#1D4ED8',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -684,12 +684,12 @@ export const SettingsPage: React.FC = () => {
                   startIcon={<CloudUploadRoundedIcon sx={{ fontSize: 16 }} />}
                   sx={{
                     borderColor: '#E2E8F0',
-                    color: '#991B1B',
+                    color: '#1D4ED8',
                     fontSize: '12px',
                     fontWeight: 700,
                     textTransform: 'none',
                     borderRadius: '8px',
-                    '&:hover': { borderColor: '#DC2626', backgroundColor: '#F8FAFC' },
+                    '&:hover': { borderColor: '#1D4ED8', backgroundColor: '#EFF6FF' },
                   }}
                 >
                   {settings.logoUrl ? 'Change' : 'Upload Logo'}
@@ -763,8 +763,8 @@ export const SettingsPage: React.FC = () => {
                       width: 38,
                       height: 38,
                       borderRadius: '6px',
-                      backgroundColor: '#DC2626',
-                      color: '#FEF08A',
+                      backgroundColor: '#1D4ED8',
+                      color: '#FACC15',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -835,8 +835,8 @@ export const SettingsPage: React.FC = () => {
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <StorefrontRoundedIcon sx={{ color: '#DC2626', fontSize: 20 }} />
-                <Typography sx={{ fontSize: '15px', fontWeight: 800, color: '#991B1B' }}>
+                <StorefrontRoundedIcon sx={{ color: '#1D4ED8', fontSize: 20 }} />
+                <Typography sx={{ fontSize: '15px', fontWeight: 800, color: '#0B0F19' }}>
                   Store & Business Identity
                 </Typography>
               </Box>

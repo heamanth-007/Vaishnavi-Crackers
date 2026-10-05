@@ -156,7 +156,7 @@ export const CompaniesPage: FC<CompaniesPageProps> = ({ onAddCompany }) => {
           sx={{
             fontSize: '30px',
             fontWeight: 800,
-            color: '#B91C1C',
+            color: '#0B0F19',
             letterSpacing: '-0.025em',
             lineHeight: 1.2,
           }}
@@ -186,17 +186,17 @@ export const CompaniesPage: FC<CompaniesPageProps> = ({ onAddCompany }) => {
               boxSizing: 'border-box',
               transition: 'all 0.2s',
               '&:hover': {
-                borderColor: '#F59E0B',
+                borderColor: '#EAB308',
               },
               '&:focus-within': {
-                borderColor: '#DC2626',
-                boxShadow: '0 0 0 3px rgba(220, 38, 38, 0.12)',
+                borderColor: '#1D4ED8',
+                boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.15)',
               },
             }}
           >
             <SearchRoundedIcon
               sx={{
-                color: '#D97706',
+                color: '#1D4ED8',
                 fontSize: 19,
                 mr: 1,
               }}
@@ -228,8 +228,8 @@ export const CompaniesPage: FC<CompaniesPageProps> = ({ onAddCompany }) => {
             startIcon={<PrintOutlinedIcon sx={{ fontSize: 18 }} />}
             sx={{
               backgroundColor: '#FFFFFF',
-              color: '#1E293B',
-              borderColor: '#FCD34D',
+              color: '#0B0F19',
+              borderColor: '#EAB308',
               borderWidth: '1.5px',
               height: '38px',
               px: 1.8,
@@ -241,8 +241,8 @@ export const CompaniesPage: FC<CompaniesPageProps> = ({ onAddCompany }) => {
               whiteSpace: 'nowrap',
               boxShadow: '0 1px 2px rgba(0, 0, 0, 0.04)',
               '&:hover': {
-                backgroundColor: '#F8FAFC',
-                borderColor: '#F59E0B',
+                backgroundColor: '#EFF6FF',
+                borderColor: '#1D4ED8',
               },
             }}
           >
@@ -256,9 +256,9 @@ export const CompaniesPage: FC<CompaniesPageProps> = ({ onAddCompany }) => {
             onClick={onAddCompany}
             startIcon={<AddRoundedIcon sx={{ fontSize: 19 }} />}
             sx={{
-              background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+              background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
               color: '#FFFFFF',
-              border: '1px solid #F59E0B',
+              border: '1.5px solid #FACC15',
               height: '38px',
               px: 2,
               borderRadius: '8px',
@@ -267,9 +267,9 @@ export const CompaniesPage: FC<CompaniesPageProps> = ({ onAddCompany }) => {
               textTransform: 'none',
               letterSpacing: '-0.01em',
               whiteSpace: 'nowrap',
-              boxShadow: '0 2px 8px rgba(220, 38, 38, 0.25)',
+              boxShadow: '0 2px 8px rgba(29, 78, 216, 0.25)',
               '&:hover': {
-                background: 'linear-gradient(135deg, #B91C1C 0%, #991B1B 100%)',
+                background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
               },
             }}
           >
@@ -369,7 +369,7 @@ export const CompaniesPage: FC<CompaniesPageProps> = ({ onAddCompany }) => {
               {loading ? (
                 <TableRow>
                   <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
-                    <CircularProgress size={32} sx={{ color: '#DC2626' }} />
+                    <CircularProgress size={32} sx={{ color: '#1D4ED8' }} />
                   </TableCell>
                 </TableRow>
               ) : filteredCompanies.length === 0 ? (
@@ -423,8 +423,8 @@ export const CompaniesPage: FC<CompaniesPageProps> = ({ onAddCompany }) => {
                               width: 32,
                               height: 32,
                               borderRadius: '50%',
-                              backgroundColor: company.avatarBg || '#F1F5F9',
-                              color: company.avatarColor || '#B91C1C',
+                              backgroundColor: company.avatarBg || '#EFF6FF',
+                              color: company.avatarColor || '#1D4ED8',
                               border: '1px solid #E2E8F0',
                               display: 'flex',
                               alignItems: 'center',
@@ -516,16 +516,16 @@ export const CompaniesPage: FC<CompaniesPageProps> = ({ onAddCompany }) => {
                               size="small"
                               onClick={() => handleDelete(recordId)}
                               sx={{
-                                color: '#DC2626',
-                                backgroundColor: '#FEF2F2',
-                                border: '1px solid #FECACA',
+                                color: '#64748B',
+                                backgroundColor: '#F8FAFC',
+                                border: '1px solid #E2E8F0',
                                 borderRadius: '6px',
                                 p: 0.7,
                                 transition: 'all 0.15s ease',
                                 '&:hover': {
-                                  color: '#FFFFFF',
-                                  backgroundColor: '#DC2626',
-                                  borderColor: '#DC2626',
+                                  color: '#B45309',
+                                  backgroundColor: '#FEF3C7',
+                                  borderColor: '#FDE68A',
                                 },
                               }}
                             >
@@ -558,7 +558,7 @@ export const CompaniesPage: FC<CompaniesPageProps> = ({ onAddCompany }) => {
           },
         }}
       >
-        <DialogTitle sx={{ fontSize: '18px', fontWeight: 700, color: '#B91C1C', pb: 1 }}>
+        <DialogTitle sx={{ fontSize: '18px', fontWeight: 700, color: '#0B0F19', pb: 1 }}>
           Edit Company Details
         </DialogTitle>
         <DialogContent>
@@ -622,13 +622,14 @@ export const CompaniesPage: FC<CompaniesPageProps> = ({ onAddCompany }) => {
             onClick={handleSaveEdit}
             disabled={editLoading}
             sx={{
-              background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+              background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
               color: '#FFFFFF',
+              border: '1.5px solid #FACC15',
               fontWeight: 700,
               textTransform: 'none',
               px: 2.5,
               borderRadius: '6px',
-              '&:hover': { background: 'linear-gradient(135deg, #B91C1C 0%, #991B1B 100%)' },
+              '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' },
             }}
           >
             {editLoading ? 'Saving...' : 'Save Changes'}

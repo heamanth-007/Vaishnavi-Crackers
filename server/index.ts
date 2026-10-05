@@ -2,6 +2,7 @@ import express, { type Application, type Request, type Response } from 'express'
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import mongoose from 'mongoose';
 
 // Load environment variables (.env)
 dotenv.config({ path: path.join(__dirname, '.env') });
@@ -20,13 +21,15 @@ import accountRoutes from './routes/accountRoutes';
 import authRoutes from './routes/authRoutes';
 import settingsRoutes from './routes/settingsRoutes';
 import { seedDefaultAdmin } from './controllers/authController';
+import { fixExistingProductCodes } from './controllers/priceListController';
 
 const app: Application = express();
 const PORT = process.env.PORT || 5015;
 
-// Connect Database & Seed default admin
+// Connect Database & Seed default admin & Normalize product codes
 connectDB().then(() => {
   seedDefaultAdmin();
+  fixExistingProductCodes();
 });
 
 // Configure CORS Origins
@@ -94,9 +97,13 @@ app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 
 // Health Check Route
 app.get('/api/health', (_req: Request, res: Response) => {
-  res.status(200).json({
-    status: 'OK',
-    message: 'Vaishnavi Crackers API Server is running smoothly',
+  const dbConnected = mongoose.connection.readyState === 1;
+  res.status(dbConnected ? 200 : 503).json({
+    status: dbConnected ? 'OK' : 'DATABASE_DISCONNECTED',
+    message: dbConnected
+      ? 'Vaishnavi Crackers API Server is running smoothly'
+      : 'Backend server is running but MongoDB is disconnected',
+    database: dbConnected ? 'connected' : 'disconnected',
     port: PORT,
     timestamp: new Date().toISOString(),
   });

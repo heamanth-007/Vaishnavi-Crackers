@@ -37,11 +37,14 @@ import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 import Inventory2RoundedIcon from '@mui/icons-material/Inventory2Rounded';
 import { ProductsApi, CategoriesApi, PriceListsApi } from '../services/api';
 import { printProductsListDirectly } from '../utils/printUtils';
+import { formatProductCode } from '../utils/productUtils';
 
 export interface ProductItem {
   _id?: string;
   id?: string;
   slNo: number;
+  productCode?: string | number;
+  sku?: string;
   name: string;
   category?: string;
   rate?: number;
@@ -148,12 +151,21 @@ export const ProductsPage: FC = () => {
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
       const matchesCategory = selectedCategory === 'ALL' || p.category === selectedCategory;
-      const term = searchTerm.toLowerCase().trim();
+      const rawTerm = searchTerm.trim().replace(/^#+/, '');
+      if (!rawTerm) return matchesCategory;
+      const term = rawTerm.toLowerCase();
+      const isNum = /^\d+$/.test(rawTerm);
+      if (isNum) {
+        const qNum = parseInt(rawTerm, 10);
+        const codeStr = formatProductCode(p.productCode || p.sku || p.slNo);
+        const codeNum = parseInt(codeStr, 10);
+        const codeMatch = codeNum === qNum || codeStr === rawTerm || codeStr === rawTerm.padStart(3, '0');
+        return matchesCategory && codeMatch;
+      }
       const matchesSearch =
-        !term ||
         p.name.toLowerCase().includes(term) ||
         (p.category && p.category.toLowerCase().includes(term)) ||
-        String(p.slNo).includes(term) ||
+        formatProductCode(p.productCode || p.sku || p.slNo).toLowerCase().includes(term) ||
         String(p.rate).includes(term);
       return matchesCategory && matchesSearch;
     });
@@ -303,8 +315,8 @@ export const ProductsPage: FC = () => {
         {/* Festive Crimson & Gold Header Banner */}
         <Box
           sx={{
-            background: 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)',
-            borderBottom: '2px solid #F59E0B',
+            background: 'linear-gradient(135deg, #0B0F19 0%, #111827 40%, #1E3A8A 100%)',
+            borderBottom: '2.5px solid #EAB308',
             px: { xs: 2, sm: 3 },
             py: 1.5,
             display: 'flex',
@@ -327,7 +339,7 @@ export const ProductsPage: FC = () => {
                 justifyContent: 'center',
               }}
             >
-              <Inventory2RoundedIcon sx={{ color: '#FEF08A', fontSize: 22 }} />
+              <Inventory2RoundedIcon sx={{ color: '#FACC15', fontSize: 22 }} />
             </Box>
             <Box>
               <Typography
@@ -341,17 +353,17 @@ export const ProductsPage: FC = () => {
               >
                 Products & Price Catalog
               </Typography>
-              <Typography sx={{ color: '#FEF08A', fontSize: '11.5px', fontWeight: 600 }}>
+              <Typography sx={{ color: '#FACC15', fontSize: '11.5px', fontWeight: 600 }}>
                 Synced directly with Price List & Categories
               </Typography>
             </Box>
             <Typography
               sx={{
-                color: '#FEF08A',
+                color: '#FACC15',
                 fontSize: '12px',
                 fontWeight: 700,
-                backgroundColor: 'rgba(254, 240, 138, 0.2)',
-                border: '1px solid rgba(254, 240, 138, 0.35)',
+                backgroundColor: 'rgba(250, 204, 21, 0.15)',
+                border: '1px solid rgba(250, 204, 21, 0.4)',
                 px: 1.2,
                 py: 0.3,
                 borderRadius: '12px',
@@ -385,7 +397,7 @@ export const ProductsPage: FC = () => {
                 boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
               }}
             >
-              <SearchRoundedIcon sx={{ color: '#D97706', fontSize: 19, mr: 0.8, flexShrink: 0 }} />
+              <SearchRoundedIcon sx={{ color: '#1D4ED8', fontSize: 19, mr: 0.8, flexShrink: 0 }} />
               <InputBase
                 placeholder="Search products..."
                 value={searchTerm}
@@ -444,19 +456,19 @@ export const ProductsPage: FC = () => {
               onClick={handleOpenAdd}
               startIcon={<AddRoundedIcon sx={{ fontSize: 18 }} />}
               sx={{
-                backgroundColor: '#FFFFFF',
-                color: '#B91C1C',
-                border: '1.5px solid #E2E8F0',
+                backgroundColor: '#FACC15',
+                color: '#0B0F19',
+                border: '1.5px solid #EAB308',
                 fontSize: '13px',
                 fontWeight: 800,
                 textTransform: 'none',
                 px: 2,
                 height: '38px',
                 borderRadius: '8px',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+                boxShadow: '0 2px 8px rgba(234, 179, 8, 0.3)',
                 whiteSpace: 'nowrap',
                 '&:hover': {
-                  backgroundColor: '#F8FAFC',
+                  backgroundColor: '#EAB308',
                 },
               }}
             >
@@ -492,11 +504,11 @@ export const ProductsPage: FC = () => {
               fontWeight: 700,
               fontSize: '12px',
               cursor: 'pointer',
-              backgroundColor: selectedCategory === 'ALL' ? '#B91C1C' : '#FFFFFF',
+              backgroundColor: selectedCategory === 'ALL' ? '#1D4ED8' : '#FFFFFF',
               color: selectedCategory === 'ALL' ? '#FFFFFF' : '#475569',
-              border: selectedCategory === 'ALL' ? '1px solid #991B1B' : '1px solid #E2E8F0',
+              border: selectedCategory === 'ALL' ? '1px solid #1E40AF' : '1px solid #E2E8F0',
               '&:hover': {
-                backgroundColor: selectedCategory === 'ALL' ? '#991B1B' : '#F1F5F9',
+                backgroundColor: selectedCategory === 'ALL' ? '#1E40AF' : '#EFF6FF',
               },
             }}
           />
@@ -514,11 +526,11 @@ export const ProductsPage: FC = () => {
                   fontWeight: 700,
                   fontSize: '12px',
                   cursor: 'pointer',
-                  backgroundColor: isSelected ? '#B91C1C' : '#FFFFFF',
+                  backgroundColor: isSelected ? '#1D4ED8' : '#FFFFFF',
                   color: isSelected ? '#FFFFFF' : '#57463A',
-                  border: isSelected ? '1px solid #991B1B' : '1px solid #E5E7EB',
+                  border: isSelected ? '1px solid #1E40AF' : '1px solid #E5E7EB',
                   '&:hover': {
-                    backgroundColor: isSelected ? '#991B1B' : '#F3F4F6',
+                    backgroundColor: isSelected ? '#1E40AF' : '#EFF6FF',
                   },
                 }}
               />
@@ -533,15 +545,15 @@ export const ProductsPage: FC = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              backgroundColor: '#FEF2F2',
-              borderBottom: '2px solid #FECACA',
+              backgroundColor: '#EFF6FF',
+              borderBottom: '2px solid #BFDBFE',
               px: { xs: 2, sm: 3 },
               py: 1.2,
               animation: 'fadeIn 0.2s ease-in-out',
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
-              <Typography sx={{ fontSize: '13.5px', fontWeight: 800, color: '#991B1B' }}>
+              <Typography sx={{ fontSize: '13.5px', fontWeight: 800, color: '#1E3A8A' }}>
                 {selectedIds.length} {selectedIds.length === 1 ? 'product' : 'products'} selected
               </Typography>
               <Button
@@ -551,11 +563,11 @@ export const ProductsPage: FC = () => {
                   textTransform: 'none',
                   fontSize: '12px',
                   fontWeight: 700,
-                  color: '#7F1D1D',
+                  color: '#1D4ED8',
                   p: 0,
                   minWidth: 'auto',
                   textDecoration: 'underline',
-                  '&:hover': { backgroundColor: 'transparent', color: '#991B1B' },
+                  '&:hover': { backgroundColor: 'transparent', color: '#1E40AF' },
                 }}
               >
                 Deselect All
@@ -569,17 +581,18 @@ export const ProductsPage: FC = () => {
                 onClick={() => setBulkDeleteDialogOpen(true)}
                 startIcon={<DeleteSweepRoundedIcon sx={{ fontSize: 18 }} />}
                 sx={{
-                  backgroundColor: '#DC2626',
+                  backgroundColor: '#0B0F19',
                   color: '#FFFFFF',
+                  border: '1.5px solid #FACC15',
                   fontSize: '12.5px',
                   fontWeight: 800,
                   textTransform: 'none',
                   px: 2,
                   py: 0.6,
                   borderRadius: '7px',
-                  boxShadow: '0 2px 8px rgba(220, 38, 38, 0.35)',
+                  boxShadow: '0 2px 8px rgba(11, 15, 25, 0.25)',
                   '&:hover': {
-                    backgroundColor: '#B91C1C',
+                    backgroundColor: '#1E293B',
                   },
                 }}
               >
@@ -613,9 +626,9 @@ export const ProductsPage: FC = () => {
                     disabled={filteredProducts.length === 0}
                     sx={{
                       p: 0,
-                      color: '#D97706',
-                      '&.Mui-checked': { color: '#DC2626' },
-                      '&.MuiCheckbox-indeterminate': { color: '#DC2626' },
+                      color: '#94A3B8',
+                      '&.Mui-checked': { color: '#1D4ED8' },
+                      '&.MuiCheckbox-indeterminate': { color: '#1D4ED8' },
                     }}
                   />
                 </TableCell>
@@ -629,10 +642,10 @@ export const ProductsPage: FC = () => {
                     letterSpacing: '0.04em',
                     backgroundColor: '#F8FAFC',
                     borderBottom: '2px solid #E2E8F0',
-                    width: '70px',
+                    width: '100px',
                   }}
                 >
-                  SL.NO
+                  PRODUCT CODE
                 </TableCell>
                 <TableCell
                   sx={{
@@ -750,7 +763,7 @@ export const ProductsPage: FC = () => {
               {loading ? (
                 <TableRow>
                   <TableCell colSpan={12} align="center" sx={{ py: 6 }}>
-                    <CircularProgress size={32} sx={{ color: '#DC2626' }} />
+                    <CircularProgress size={32} sx={{ color: '#1D4ED8' }} />
                   </TableCell>
                 </TableRow>
               ) : filteredProducts.length === 0 ? (
@@ -764,7 +777,7 @@ export const ProductsPage: FC = () => {
                         <Button
                           size="small"
                           onClick={() => setSearchTerm('')}
-                          sx={{ textTransform: 'none', color: '#B91C1C', fontWeight: 700 }}
+                          sx={{ textTransform: 'none', color: '#1D4ED8', fontWeight: 700 }}
                         >
                           Clear Search
                         </Button>
@@ -785,9 +798,9 @@ export const ProductsPage: FC = () => {
                       key={prodId}
                       selected={isSelected}
                       sx={{
-                        backgroundColor: isSelected ? '#FEF2F2 !important' : 'inherit',
+                        backgroundColor: isSelected ? '#EFF6FF !important' : 'inherit',
                         '&:hover': {
-                          backgroundColor: isSelected ? '#FEE2E2 !important' : '#FEFDF5',
+                          backgroundColor: isSelected ? '#DBEAFE !important' : '#F8FAFC',
                         },
                       }}
                     >
@@ -807,7 +820,7 @@ export const ProductsPage: FC = () => {
                           sx={{
                             p: 0,
                             color: '#D1D5DB',
-                            '&.Mui-checked': { color: '#DC2626' },
+                            '&.Mui-checked': { color: '#1D4ED8' },
                           }}
                         />
                       </TableCell>
@@ -817,11 +830,28 @@ export const ProductsPage: FC = () => {
                           px: { xs: 1.5, sm: 2.5 },
                           fontSize: '13.5px',
                           fontWeight: 700,
-                          color: '#786C58',
+                          color: '#1D4ED8',
                           borderBottom: isLast ? 'none' : '1px solid #F1F5F9',
                         }}
                       >
-                        {product.slNo || index + 1}
+                        <Box
+                          sx={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: '#EFF6FF',
+                            color: '#1D4ED8',
+                            border: '1px solid #BFDBFE',
+                            borderRadius: '6px',
+                            px: 1,
+                            py: 0.3,
+                            fontWeight: 800,
+                            fontSize: '12px',
+                            minWidth: '36px',
+                          }}
+                        >
+                          {formatProductCode(product.productCode || product.sku || product.slNo, index + 1)}
+                        </Box>
                       </TableCell>
                       <TableCell
                         sx={{
@@ -890,7 +920,7 @@ export const ProductsPage: FC = () => {
                           px: { xs: 2, sm: 2.5 },
                           fontSize: '14.5px',
                           fontWeight: 800,
-                          color: '#B91C1C',
+                          color: '#1D4ED8',
                           borderBottom: isLast ? 'none' : '1px solid #F1F5F9',
                         }}
                       >
@@ -945,16 +975,16 @@ export const ProductsPage: FC = () => {
                             size="small"
                             onClick={() => handleDeleteProduct(product)}
                             sx={{
-                              color: '#DC2626',
-                              backgroundColor: '#FEF2F2',
-                              border: '1px solid #FECACA',
+                              color: '#64748B',
+                              backgroundColor: '#F8FAFC',
+                              border: '1px solid #E2E8F0',
                               borderRadius: '6px',
                               p: 0.6,
                               transition: 'all 0.15s ease',
                               '&:hover': {
-                                color: '#FFFFFF',
-                                backgroundColor: '#DC2626',
-                                borderColor: '#DC2626',
+                                color: '#B45309',
+                                backgroundColor: '#FEF3C7',
+                                borderColor: '#FDE68A',
                               },
                             }}
                           >
@@ -982,20 +1012,20 @@ export const ProductsPage: FC = () => {
             sx: {
               borderRadius: '14px',
               p: 1,
-              border: '1.5px solid #FECACA',
+              border: '1.5px solid #E2E8F0',
             },
           },
         }}
       >
-        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.2, color: '#DC2626', fontWeight: 800, fontSize: '17px' }}>
-          <WarningAmberRoundedIcon sx={{ color: '#DC2626', fontSize: 24 }} />
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.2, color: '#0B0F19', fontWeight: 800, fontSize: '17px' }}>
+          <WarningAmberRoundedIcon sx={{ color: '#D97706', fontSize: 24 }} />
           Bulk Delete Confirmation
         </DialogTitle>
         <DialogContent sx={{ pt: '10px !important' }}>
           <Typography sx={{ fontSize: '13.5px', color: '#1F2937', fontWeight: 600, mb: 1.5 }}>
             Are you sure you want to permanently delete <strong>{selectedIds.length}</strong> selected products?
           </Typography>
-          <Typography sx={{ fontSize: '12px', color: '#6B7280', lineHeight: 1.5, backgroundColor: '#FEF2F2', p: 1.5, borderRadius: '8px', border: '1px solid #FECACA' }}>
+          <Typography sx={{ fontSize: '12px', color: '#92400E', lineHeight: 1.5, backgroundColor: '#FEF3C7', p: 1.5, borderRadius: '8px', border: '1px solid #FDE68A' }}>
             ⚠️ This will remove these products from both the Products catalog and the synced Price List. This action cannot be undone.
           </Typography>
         </DialogContent>
@@ -1009,18 +1039,19 @@ export const ProductsPage: FC = () => {
           </Button>
           <Button
             variant="contained"
-            color="error"
             onClick={handleConfirmBulkDelete}
             disabled={bulkDeleting}
             startIcon={bulkDeleting ? <CircularProgress size={16} color="inherit" /> : <DeleteSweepRoundedIcon />}
             sx={{
-              backgroundColor: '#DC2626',
+              backgroundColor: '#0B0F19',
+              color: '#FFFFFF',
+              border: '1.5px solid #EAB308',
               fontWeight: 800,
               textTransform: 'none',
               px: 2.5,
               borderRadius: '8px',
-              boxShadow: '0 2px 8px rgba(220, 38, 38, 0.3)',
-              '&:hover': { backgroundColor: '#B91C1C' },
+              boxShadow: '0 2px 8px rgba(11, 15, 25, 0.3)',
+              '&:hover': { backgroundColor: '#1E293B' },
             }}
           >
             {bulkDeleting ? 'Deleting...' : `Delete ${selectedIds.length} Products`}
@@ -1045,7 +1076,7 @@ export const ProductsPage: FC = () => {
           },
         }}
       >
-        <DialogTitle sx={{ fontSize: '18px', fontWeight: 800, color: '#B91C1C' }}>
+        <DialogTitle sx={{ fontSize: '18px', fontWeight: 800, color: '#0B0F19' }}>
           {editingProduct ? 'Edit Product' : 'Add New Product'}
         </DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '10px !important' }}>
@@ -1118,7 +1149,7 @@ export const ProductsPage: FC = () => {
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6 }}>
-              <Typography sx={{ fontSize: '13px', fontWeight: 700, color: '#B91C1C', mb: 0.6 }}>
+              <Typography sx={{ fontSize: '13px', fontWeight: 700, color: '#1D4ED8', mb: 0.6 }}>
                 Selling Rate / Price (₹) *
               </Typography>
               <TextField
@@ -1127,7 +1158,7 @@ export const ProductsPage: FC = () => {
                 type="number"
                 value={productRate}
                 onChange={(e) => setProductRate(e.target.value)}
-                slotProps={{ input: { sx: { fontSize: '14px', fontWeight: 800, color: '#B91C1C' } } }}
+                slotProps={{ input: { sx: { fontSize: '14px', fontWeight: 800, color: '#1D4ED8' } } }}
               />
             </Grid>
           </Grid>
@@ -1147,13 +1178,14 @@ export const ProductsPage: FC = () => {
             onClick={handleSaveProduct}
             disabled={modalLoading}
             sx={{
-              background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+              background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
               color: '#FFFFFF',
               fontWeight: 700,
               textTransform: 'none',
               px: 3,
               borderRadius: '8px',
-              '&:hover': { background: 'linear-gradient(135deg, #B91C1C 0%, #991B1B 100%)' },
+              border: '1.5px solid #FACC15',
+              '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' },
             }}
           >
             {modalLoading ? 'Saving...' : 'Save Product'}

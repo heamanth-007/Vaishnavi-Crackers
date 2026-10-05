@@ -48,9 +48,9 @@ export interface CategoryItem {
 }
 
 const PRESET_COLORS = [
-  '#DC2626', // Crimson
-  '#EA580C', // Orange
-  '#D97706', // Amber / Gold
+  '#1D4ED8', // Royal Blue
+  '#EAB308', // Gold / Yellow
+  '#0F172A', // Slate Black
   '#059669', // Emerald
   '#2563EB', // Royal Blue
   '#7C3AED', // Purple
@@ -69,7 +69,7 @@ export const CategoriesPage: FC = () => {
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
   const [description, setDescription] = useState('');
-  const [color, setColor] = useState('#DC2626');
+  const [color, setColor] = useState('#1D4ED8');
   const [isActive, setIsActive] = useState(true);
   const [modalLoading, setModalLoading] = useState(false);
 
@@ -119,7 +119,7 @@ export const CategoriesPage: FC = () => {
     setName(cat.name || '');
     setCode(cat.code || '');
     setDescription(cat.description || '');
-    setColor(cat.color || '#DC2626');
+    setColor(cat.color || '#1D4ED8');
     setIsActive(cat.isActive !== false);
     setOpenModal(true);
   };
@@ -220,12 +220,12 @@ export const CategoriesPage: FC = () => {
                 width: 44,
                 height: 44,
                 borderRadius: '10px',
-                backgroundColor: '#DC2626',
+                backgroundColor: '#1D4ED8',
                 color: '#FFFFFF',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 2px 8px rgba(220, 38, 38, 0.3)',
+                boxShadow: '0 2px 8px rgba(29, 78, 216, 0.3)',
               }}
             >
               <CategoryRoundedIcon sx={{ fontSize: 24 }} />
@@ -337,8 +337,8 @@ export const CategoriesPage: FC = () => {
         {/* Festive Red Banner Header */}
         <Box
           sx={{
-            background: 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)',
-            borderBottom: '2px solid #F59E0B',
+            background: 'linear-gradient(135deg, #0B0F19 0%, #111827 40%, #1E3A8A 100%)',
+            borderBottom: '2.5px solid #EAB308',
             px: { xs: 2, sm: 3 },
             py: 1.5,
             display: 'flex',
@@ -362,11 +362,11 @@ export const CategoriesPage: FC = () => {
             </Typography>
             <Typography
               sx={{
-                color: '#FEF08A',
+                color: '#FACC15',
                 fontSize: '12px',
                 fontWeight: 700,
-                backgroundColor: 'rgba(254, 240, 138, 0.2)',
-                border: '1px solid rgba(254, 240, 138, 0.35)',
+                backgroundColor: 'rgba(250, 204, 21, 0.15)',
+                border: '1px solid rgba(250, 204, 21, 0.4)',
                 px: 1.2,
                 py: 0.3,
                 borderRadius: '12px',
@@ -399,7 +399,7 @@ export const CategoriesPage: FC = () => {
                 boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
               }}
             >
-              <SearchRoundedIcon sx={{ color: '#D97706', fontSize: 19, mr: 0.8, flexShrink: 0 }} />
+              <SearchRoundedIcon sx={{ color: '#1D4ED8', fontSize: 19, mr: 0.8, flexShrink: 0 }} />
               <InputBase
                 placeholder="Search categories..."
                 value={searchTerm}
@@ -445,8 +445,8 @@ export const CategoriesPage: FC = () => {
                   borderRadius: '8px',
                   whiteSpace: 'nowrap',
                   '&:hover': {
-                    backgroundColor: 'rgba(239, 68, 68, 0.9)',
-                    borderColor: '#EF4444',
+                    backgroundColor: '#0B0F19',
+                    borderColor: '#EAB308',
                   },
                 }}
               >
@@ -461,19 +461,19 @@ export const CategoriesPage: FC = () => {
               onClick={handleOpenAdd}
               startIcon={<AddRoundedIcon sx={{ fontSize: 18 }} />}
               sx={{
-                backgroundColor: '#FFFFFF',
-                color: '#B91C1C',
-                border: '1.5px solid #E2E8F0',
+                backgroundColor: '#FACC15',
+                color: '#0B0F19',
+                border: '1.5px solid #EAB308',
                 fontSize: '13px',
                 fontWeight: 800,
                 textTransform: 'none',
                 px: 2,
                 height: '38px',
                 borderRadius: '8px',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+                boxShadow: '0 2px 8px rgba(234, 179, 8, 0.3)',
                 whiteSpace: 'nowrap',
                 '&:hover': {
-                  backgroundColor: '#F8FAFC',
+                  backgroundColor: '#EAB308',
                 },
               }}
             >
@@ -592,7 +592,7 @@ export const CategoriesPage: FC = () => {
               {loading ? (
                 <TableRow>
                   <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
-                    <CircularProgress size={32} sx={{ color: '#DC2626' }} />
+                    <CircularProgress size={32} sx={{ color: '#1D4ED8' }} />
                   </TableCell>
                 </TableRow>
               ) : filteredCategories.length === 0 ? (
@@ -606,7 +606,7 @@ export const CategoriesPage: FC = () => {
                         <Button
                           size="small"
                           onClick={() => setSearchTerm('')}
-                          sx={{ textTransform: 'none', color: '#B91C1C', fontWeight: 700 }}
+                          sx={{ textTransform: 'none', color: '#1D4ED8', fontWeight: 700 }}
                         >
                           Clear Search
                         </Button>
@@ -619,14 +619,14 @@ export const CategoriesPage: FC = () => {
               ) : (
                 filteredCategories.map((cat, index) => {
                   const isLast = index === filteredCategories.length - 1;
-                  const catColor = cat.color || '#DC2626';
+                  const catColor = cat.color || '#1D4ED8';
 
                   return (
                     <TableRow
                       key={cat._id || cat.id || index}
                       sx={{
                         '&:hover': {
-                          backgroundColor: '#FEFDF5',
+                          backgroundColor: '#F8FAFC',
                         },
                       }}
                     >
@@ -732,9 +732,9 @@ export const CategoriesPage: FC = () => {
                           sx={{
                             fontSize: '11.5px',
                             fontWeight: 700,
-                            backgroundColor: cat.isActive !== false ? '#ECFDF5' : '#FEF2F2',
-                            color: cat.isActive !== false ? '#065F46' : '#991B1B',
-                            border: `1px solid ${cat.isActive !== false ? '#A7F3D0' : '#FECACA'}`,
+                            backgroundColor: cat.isActive !== false ? '#ECFDF5' : '#F1F5F9',
+                            color: cat.isActive !== false ? '#065F46' : '#64748B',
+                            border: `1px solid ${cat.isActive !== false ? '#A7F3D0' : '#E2E8F0'}`,
                             borderRadius: '12px',
                             height: '24px',
                           }}
@@ -787,16 +787,16 @@ export const CategoriesPage: FC = () => {
                             size="small"
                             onClick={() => handleDelete(cat)}
                             sx={{
-                              color: '#DC2626',
-                              backgroundColor: '#FEF2F2',
-                              border: '1px solid #FECACA',
+                              color: '#64748B',
+                              backgroundColor: '#F8FAFC',
+                              border: '1px solid #E2E8F0',
                               borderRadius: '6px',
                               p: 0.7,
                               transition: 'all 0.15s ease',
                               '&:hover': {
-                                color: '#FFFFFF',
-                                backgroundColor: '#DC2626',
-                                borderColor: '#DC2626',
+                                color: '#B45309',
+                                backgroundColor: '#FEF3C7',
+                                borderColor: '#FDE68A',
                               },
                             }}
                           >
@@ -829,7 +829,7 @@ export const CategoriesPage: FC = () => {
           },
         }}
       >
-        <DialogTitle sx={{ fontSize: '18px', fontWeight: 800, color: '#B91C1C', pb: 1 }}>
+        <DialogTitle sx={{ fontSize: '18px', fontWeight: 800, color: '#0B0F19', pb: 1 }}>
           {editingCategory ? 'Edit Category' : 'Create New Category'}
         </DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '10px !important' }}>
@@ -922,7 +922,7 @@ export const CategoriesPage: FC = () => {
               <Switch
                 checked={isActive}
                 onChange={(e) => setIsActive(e.target.checked)}
-                color="error"
+                color="primary"
               />
             }
             label={
@@ -945,13 +945,14 @@ export const CategoriesPage: FC = () => {
             onClick={handleSave}
             disabled={modalLoading}
             sx={{
-              background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+              background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
               color: '#FFFFFF',
               fontWeight: 700,
               textTransform: 'none',
               px: 3,
               borderRadius: '8px',
-              '&:hover': { background: 'linear-gradient(135deg, #B91C1C 0%, #991B1B 100%)' },
+              border: '1.5px solid #FACC15',
+              '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' },
             }}
           >
             {modalLoading ? 'Saving...' : editingCategory ? 'Update Category' : 'Create Category'}

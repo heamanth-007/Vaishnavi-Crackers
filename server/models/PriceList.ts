@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IPriceListItem extends Document {
   slNo?: number;
+  productCode?: string;
   itemName: string;
   category: string;
   unit: string;
@@ -19,6 +20,10 @@ const PriceListItemSchema: Schema = new Schema(
     slNo: {
       type: Number,
       default: 1,
+    },
+    productCode: {
+      type: String,
+      trim: true,
     },
     itemName: {
       type: String,

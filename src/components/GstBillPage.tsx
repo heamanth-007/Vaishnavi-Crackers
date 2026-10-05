@@ -48,6 +48,7 @@ import { GstBillPrintModal } from './GstBillPrintModal';
 import type { GstBillPrintData, GstProductItem } from './GstBillPrintTemplate';
 import { numberToIndianWords } from '../utils/numberToWords';
 import { printGstBillDirectly } from '../utils/printUtils';
+import { formatProductCode } from '../utils/productUtils';
 
 export const INDIAN_STATES = [
   { code: '33', name: 'Tamil Nadu' },
@@ -226,6 +227,8 @@ export const GstBillPage: FC = () => {
               rate: p.rate || 0,
               unit: p.unit || 'Box',
               hsn: p.hsn || '3604',
+              productCode: formatProductCode(p.productCode || p.sku || p.slNo),
+              slNo: p.slNo,
             });
           }
         });
@@ -235,11 +238,14 @@ export const GstBillPage: FC = () => {
           if (item.itemName) {
             const key = item.itemName.toLowerCase().trim();
             const existing = pMap.get(key);
+            const code = formatProductCode(item.productCode || item.code || item.slNo || existing?.productCode);
             pMap.set(key, {
               name: item.itemName.trim(),
               rate: item.rate && item.rate > 0 ? item.rate : (existing?.rate || 0),
               unit: item.unit || existing?.unit || 'Box',
               hsn: item.hsn || existing?.hsn || '3604',
+              productCode: code,
+              slNo: item.slNo || existing?.slNo,
             });
           }
         });
@@ -418,7 +424,29 @@ export const GstBillPage: FC = () => {
   // Auto-fill product rate and HSN
   const handleProductChange = (_: any, value: any) => {
     if (typeof value === 'string') {
-      setSelectedProduct(value);
+      const clean = value.trim().replace(/^#+/, '');
+      const isNum = /^\d+$/.test(clean);
+      let matched: any;
+      if (isNum) {
+        const qNum = parseInt(clean, 10);
+        const qPadded = clean.padStart(3, '0');
+        matched = productOptions.find((p) => {
+          const codeStr = formatProductCode(p.productCode || p.slNo);
+          const optNum = parseInt(codeStr, 10);
+          return optNum === qNum || codeStr === clean || codeStr === qPadded;
+        });
+      } else {
+        matched = productOptions.find((p) => p.name.toLowerCase() === clean.toLowerCase());
+      }
+
+      if (matched) {
+        setSelectedProduct(matched.name);
+        if (matched.rate) setRate(String(matched.rate));
+        if (matched.unit) setUnit(matched.unit);
+        setHsnCode('3604');
+      } else {
+        setSelectedProduct(value);
+      }
     } else if (value && value.name) {
       setSelectedProduct(value.name);
       if (value.rate) setRate(String(value.rate));
@@ -789,8 +817,8 @@ export const GstBillPage: FC = () => {
                 width: 40,
                 height: 40,
                 borderRadius: '10px',
-                backgroundColor: '#FEE2E2',
-                color: '#DC2626',
+                backgroundColor: '#EFF6FF',
+                color: '#1D4ED8',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -826,15 +854,16 @@ export const GstBillPage: FC = () => {
               setActiveSubTab('create');
             }}
             sx={{
-              backgroundColor: '#DC2626',
+              backgroundColor: '#1D4ED8',
               color: '#FFFFFF',
               fontWeight: 800,
               fontSize: '13px',
               borderRadius: '8px',
+              border: '1.5px solid #FACC15',
               px: 2.2,
               py: 0.9,
-              boxShadow: '0 2px 6px rgba(220, 38, 38, 0.3)',
-              '&:hover': { backgroundColor: '#B91C1C' },
+              boxShadow: '0 2px 6px rgba(29, 78, 216, 0.3)',
+              '&:hover': { backgroundColor: '#1E40AF' },
             }}
           >
            New Bill
@@ -860,7 +889,7 @@ export const GstBillPage: FC = () => {
               }}
               variant={activeSubTab === 'create' ? 'contained' : 'text'}
               sx={{
-                backgroundColor: activeSubTab === 'create' ? '#0F172A' : 'transparent',
+                backgroundColor: activeSubTab === 'create' ? '#0B0F19' : 'transparent',
                 color: activeSubTab === 'create' ? '#FFFFFF' : '#475569',
                 fontWeight: 700,
                 fontSize: '13px',
@@ -881,7 +910,7 @@ export const GstBillPage: FC = () => {
               }}
               variant={activeSubTab === 'history' ? 'contained' : 'text'}
               sx={{
-                backgroundColor: activeSubTab === 'history' ? '#0F172A' : 'transparent',
+                backgroundColor: activeSubTab === 'history' ? '#0B0F19' : 'transparent',
                 color: activeSubTab === 'history' ? '#FFFFFF' : '#475569',
                 fontWeight: 700,
                 fontSize: '13px',
@@ -971,7 +1000,7 @@ export const GstBillPage: FC = () => {
             <Typography sx={{ fontSize: '11px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
               Grand Total Invoiced
             </Typography>
-            <Typography sx={{ fontSize: '22px', fontWeight: 800, color: '#DC2626', mt: 0.5 }}>
+            <Typography sx={{ fontSize: '22px', fontWeight: 800, color: '#1D4ED8', mt: 0.5 }}>
               ₹{totalGrandSum.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
             </Typography>
           </Paper>
@@ -988,8 +1017,8 @@ export const GstBillPage: FC = () => {
               p: 2,
               mb: 3,
               borderRadius: '12px',
-              border: '1.5px solid #FCA5A5',
-              backgroundColor: '#FEF2F2',
+              border: '1.5px solid #BFDBFE',
+              backgroundColor: '#EFF6FF',
               display: 'flex',
               flexDirection: { xs: 'column', md: 'row' },
               alignItems: { xs: 'flex-start', md: 'center' },
@@ -1003,12 +1032,12 @@ export const GstBillPage: FC = () => {
                   width: 44,
                   height: 44,
                   borderRadius: '10px',
-                  backgroundColor: '#FEE2E2',
-                  border: '1px solid #FECACA',
+                  backgroundColor: '#DBEAFE',
+                  border: '1px solid #93C5FD',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#DC2626',
+                  color: '#1D4ED8',
                   flexShrink: 0,
                 }}
               >
@@ -1016,15 +1045,16 @@ export const GstBillPage: FC = () => {
               </Box>
               <Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2, flexWrap: 'wrap' }}>
-                  <Typography sx={{ fontSize: '15px', fontWeight: 800, color: '#991B1B' }}>
+                  <Typography sx={{ fontSize: '15px', fontWeight: 800, color: '#0B0F19' }}>
                     Sales Turnover
                   </Typography>
                   <Chip
                     size="small"
                     label={`Current Upto Previous Bill: ₹${parseFloat(currentTurnover || '0').toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                     sx={{
-                      backgroundColor: '#DC2626',
-                      color: '#FFFFFF',
+                      backgroundColor: '#0B0F19',
+                      color: '#FACC15',
+                      border: '1px solid #EAB308',
                       fontWeight: 800,
                       fontSize: '11.5px',
                     }}
@@ -1052,8 +1082,9 @@ export const GstBillPage: FC = () => {
                 startIcon={<SaveRoundedIcon />}
                 sx={{
                   width: { xs: '100%', sm: 'auto' },
-                  backgroundColor: '#DC2626',
+                  background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
                   color: '#FFFFFF',
+                  border: '1.5px solid #FACC15',
                   fontWeight: 800,
                   fontSize: '13px',
                   textTransform: 'none',
@@ -1061,8 +1092,8 @@ export const GstBillPage: FC = () => {
                   px: 2.2,
                   py: 0.9,
                   borderRadius: '8px',
-                  boxShadow: '0 2px 6px rgba(220, 38, 38, 0.25)',
-                  '&:hover': { backgroundColor: '#B91C1C' },
+                  boxShadow: '0 2px 6px rgba(29, 78, 216, 0.25)',
+                  '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' },
                 }}
               >
                 Save Turnover
@@ -1087,7 +1118,7 @@ export const GstBillPage: FC = () => {
             >
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
                 <Typography sx={{ fontSize: '15px', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: 1.2 }}>
-                  <AccountBalanceOutlinedIcon sx={{ fontSize: 20, color: '#DC2626' }} />
+                  <AccountBalanceOutlinedIcon sx={{ fontSize: 20, color: '#1D4ED8' }} />
                   Invoice & Place of Supply Details
                 </Typography>
                 <Button
@@ -1099,11 +1130,12 @@ export const GstBillPage: FC = () => {
                     fontSize: '12px',
                     fontWeight: 700,
                     textTransform: 'none',
-                    backgroundColor: '#DC2626',
+                    background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
                     color: '#FFFFFF',
+                    border: '1px solid #FACC15',
                     borderRadius: '7px',
                     px: 1.8,
-                    '&:hover': { backgroundColor: '#B91C1C' },
+                    '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' },
                   }}
                 >
                   New Bill
@@ -1244,7 +1276,7 @@ export const GstBillPage: FC = () => {
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { xs: 'flex-start', sm: 'center' }, gap: { xs: 0.8, sm: 2 } }}>
                     <Typography sx={{ width: { xs: '100%', sm: '140px' }, minWidth: { xs: 'auto', sm: '140px' }, flexShrink: 0, fontSize: '13px', fontWeight: 700, color: '#334155' }}>
-                      Customer Name <span style={{ color: '#DC2626' }}>*</span> :
+                      Customer Name <span style={{ color: '#1D4ED8' }}>*</span> :
                     </Typography>
                     <Box sx={{ flex: 1, width: '100%' }}>
                       <Autocomplete
@@ -1354,8 +1386,8 @@ export const GstBillPage: FC = () => {
                       fontSize: '12px',
                       fontWeight: 700,
                       textTransform: 'none',
-                      color: '#EF4444',
-                      '&:hover': { backgroundColor: '#FEF2F2' },
+                      color: '#64748B',
+                      '&:hover': { backgroundColor: '#F1F5F9', color: '#0B0F19' },
                     }}
                   >
                     Clear All Products
@@ -1370,12 +1402,181 @@ export const GstBillPage: FC = () => {
                     freeSolo
                     options={productOptions}
                     getOptionLabel={(opt: any) => (typeof opt === 'string' ? opt : opt.name || '')}
+                    filterOptions={(options, { inputValue }) => {
+                      const rawQ = (inputValue || '').trim().replace(/^#+/, '');
+                      if (!rawQ) return options;
+                      const q = rawQ.toLowerCase();
+                      const isNum = /^\d+$/.test(rawQ);
+
+                      if (isNum) {
+                        // Pure numeric query: ONLY search product code / slNo. NEVER match product name!
+                        const qNum = parseInt(rawQ, 10);
+                        const qPadded = rawQ.padStart(3, '0');
+                        return options
+                          .filter((opt) => {
+                            const codeStr = formatProductCode(opt.productCode || opt.slNo);
+                            if (!codeStr) return false;
+                            const optNum = parseInt(codeStr, 10);
+                            if (optNum === qNum || codeStr === rawQ || codeStr === qPadded) return true;
+                            if (rawQ.startsWith('0') && codeStr.startsWith(rawQ)) return true;
+                            return false;
+                          })
+                          .sort((a, b) => {
+                            const aNum = parseInt(formatProductCode(a.productCode || a.slNo), 10);
+                            const bNum = parseInt(formatProductCode(b.productCode || b.slNo), 10);
+                            if (aNum === qNum && bNum !== qNum) return -1;
+                            if (bNum === qNum && aNum !== qNum) return 1;
+                            return aNum - bNum;
+                          });
+                      }
+
+                      // Text query: search by product name
+                      return options.filter((opt) => {
+                        return (opt.name || '').toLowerCase().includes(q);
+                      });
+                    }}
                     value={selectedProduct}
                     inputValue={selectedProduct}
-                    onInputChange={(_, newVal) => setSelectedProduct(newVal)}
+                    onInputChange={(_, newVal, reason) => {
+                      if (reason === 'input') {
+                        setSelectedProduct(newVal);
+                        const clean = newVal.trim().replace(/^#+/, '');
+                        const isNum = /^\d+$/.test(clean);
+                        if (isNum) {
+                          const qNum = parseInt(clean, 10);
+                          const qPadded = clean.padStart(3, '0');
+                          const matched = productOptions.find((p) => {
+                            const codeStr = formatProductCode(p.productCode || p.slNo);
+                            const optNum = parseInt(codeStr, 10);
+                            return optNum === qNum || codeStr === clean || codeStr === qPadded;
+                          });
+                          if (matched) {
+                            if (matched.rate) setRate(String(matched.rate));
+                            if (matched.unit) setUnit(matched.unit);
+                            setHsnCode('3604');
+                          }
+                        }
+                      } else if (reason === 'clear') {
+                        setSelectedProduct('');
+                      }
+                    }}
                     onChange={handleProductChange}
+                    renderOption={(props, option) => {
+                      const { key, ...otherProps } = props;
+                      const optName = typeof option === 'string' ? option : option.name;
+                      const optRate = typeof option === 'string' ? undefined : option.rate;
+                      const optUnit = typeof option === 'string' ? undefined : option.unit;
+                      const optCode = typeof option === 'string' ? undefined : (option.productCode || option.slNo);
+                      const optKey = key || (typeof option === 'string' ? option : option.id || option.name);
+
+                      return (
+                        <Box
+                          component="li"
+                          key={optKey}
+                          {...otherProps}
+                          sx={{
+                            display: 'flex !important',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            width: '100%',
+                            py: 0.8,
+                            px: 1.5,
+                            gap: 1.2,
+                            borderBottom: '1px solid #F1F5F9',
+                            '&:last-child': { borderBottom: 'none' },
+                          }}
+                        >
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2, minWidth: 0, flex: 1 }}>
+                            {optCode !== undefined && optCode !== '' && (
+                              <Box
+                                sx={{
+                                  backgroundColor: '#EFF6FF',
+                                  color: '#1D4ED8',
+                                  border: '1px solid #BFDBFE',
+                                  borderRadius: '6px',
+                                  fontSize: '11.5px',
+                                  fontWeight: 800,
+                                  px: 0.8,
+                                  py: 0.2,
+                                  minWidth: '34px',
+                                  textAlign: 'center',
+                                  flexShrink: 0,
+                                }}
+                              >
+                                {formatProductCode(optCode)}
+                              </Box>
+                            )}
+                            <Typography noWrap sx={{ fontSize: '13.5px', fontWeight: 700, color: '#1F1714' }}>
+                              {optName}
+                            </Typography>
+                          </Box>
+                          <Box sx={{ textAlign: 'right', flexShrink: 0 }}>
+                            {optRate !== undefined && optRate > 0 && (
+                              <Typography sx={{ fontSize: '13px', fontWeight: 800, color: '#1D4ED8' }}>
+                                ₹{Number(optRate).toLocaleString('en-IN')}
+                              </Typography>
+                            )}
+                            {optUnit && (
+                              <Typography sx={{ fontSize: '10.5px', color: '#6B7280' }}>
+                                / {optUnit}
+                              </Typography>
+                            )}
+                          </Box>
+                        </Box>
+                      );
+                    }}
                     renderInput={(params) => (
-                      <TextField {...params} size="small" label="Product Name *" placeholder="Type or select product item" />
+                      <TextField
+                        {...params}
+                        size="small"
+                        label="Product Name or Code *"
+                        placeholder="Search Product Code (e.g. 001, 012) or Name..."
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            const clean = selectedProduct.trim().replace(/^#+/, '');
+                            const isNum = /^\d+$/.test(clean);
+                            let matched: any;
+                            if (isNum) {
+                              const qNum = parseInt(clean, 10);
+                              const qPadded = clean.padStart(3, '0');
+                              matched = productOptions.find((p) => {
+                                const codeStr = formatProductCode(p.productCode || p.slNo);
+                                const optNum = parseInt(codeStr, 10);
+                                return optNum === qNum || codeStr === clean || codeStr === qPadded;
+                              });
+                            } else {
+                              matched = productOptions.find((p) => p.name.toLowerCase() === clean.toLowerCase());
+                            }
+                            if (matched) {
+                              e.preventDefault();
+                              setSelectedProduct(matched.name);
+                              if (matched.rate) setRate(String(matched.rate));
+                              if (matched.unit) setUnit(matched.unit);
+                              setHsnCode('3604');
+                            }
+                          }
+                        }}
+                        onBlur={() => {
+                          const clean = selectedProduct.trim().replace(/^#+/, '');
+                          if (!clean) return;
+                          const isNum = /^\d+$/.test(clean);
+                          if (isNum) {
+                            const qNum = parseInt(clean, 10);
+                            const qPadded = clean.padStart(3, '0');
+                            const matched = productOptions.find((p) => {
+                              const codeStr = formatProductCode(p.productCode || p.slNo);
+                              const optNum = parseInt(codeStr, 10);
+                              return optNum === qNum || codeStr === clean || codeStr === qPadded;
+                            });
+                            if (matched) {
+                              setSelectedProduct(matched.name);
+                              if (matched.rate) setRate(String(matched.rate));
+                              if (matched.unit) setUnit(matched.unit);
+                              setHsnCode('3604');
+                            }
+                          }
+                        }}
+                      />
                     )}
                   />
                 </Grid>
@@ -1449,10 +1650,12 @@ export const GstBillPage: FC = () => {
                     onClick={handleAddItem}
                     startIcon={<AddRoundedIcon />}
                     sx={{
-                      backgroundColor: '#DC2626',
-                      fontWeight: 700,
+                      backgroundColor: '#FACC15',
+                      color: '#0B0F19',
+                      border: '1.5px solid #EAB308',
+                      fontWeight: 800,
                       py: 0.9,
-                      '&:hover': { backgroundColor: '#B91C1C' },
+                      '&:hover': { backgroundColor: '#EAB308' },
                     }}
                   >
                     Add
@@ -1503,7 +1706,7 @@ export const GstBillPage: FC = () => {
                                   border: '1px solid #CBD5E1',
                                   borderRadius: '4px',
                                   color: '#64748B',
-                                  '&:hover': { backgroundColor: '#FEF2F2', color: '#DC2626', borderColor: '#FCA5A5' },
+                                  '&:hover': { backgroundColor: '#EFF6FF', color: '#1D4ED8', borderColor: '#BFDBFE' },
                                 }}
                               >
                                 <RemoveRoundedIcon sx={{ fontSize: 13 }} />
@@ -1532,8 +1735,8 @@ export const GstBillPage: FC = () => {
                                     MozAppearance: 'textfield',
                                   },
                                   '& .MuiOutlinedInput-notchedOutline': { borderColor: '#CBD5E1' },
-                                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#DC2626' },
-                                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#DC2626' },
+                                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#1D4ED8' },
+                                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1D4ED8' },
                                 }}
                               />
                               <IconButton
@@ -1580,14 +1783,14 @@ export const GstBillPage: FC = () => {
                                   MozAppearance: 'textfield',
                                 },
                                 '& .MuiOutlinedInput-notchedOutline': { borderColor: '#CBD5E1' },
-                                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#DC2626' },
-                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#DC2626' },
+                                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#1D4ED8' },
+                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1D4ED8' },
                               }}
                             />
                           </TableCell>
-                          <TableCell sx={{ textAlign: 'right', fontWeight: 700, color: '#DC2626' }}>₹{row.amount}</TableCell>
+                          <TableCell sx={{ textAlign: 'right', fontWeight: 700, color: '#1D4ED8' }}>₹{row.amount}</TableCell>
                           <TableCell sx={{ textAlign: 'center' }}>
-                            <IconButton size="small" onClick={() => handleRemoveRow(idx)} sx={{ color: '#EF4444' }}>
+                            <IconButton size="small" onClick={() => handleRemoveRow(idx)} sx={{ color: '#64748B', '&:hover': { color: '#B45309', backgroundColor: '#FEF3C7' } }}>
                               <DeleteOutlineRoundedIcon sx={{ fontSize: 18 }} />
                             </IconButton>
                           </TableCell>
@@ -1731,7 +1934,7 @@ export const GstBillPage: FC = () => {
 
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <Typography sx={{ fontSize: '15px', fontWeight: 800, color: '#0F172A' }}>Grand Total:</Typography>
-                  <Typography sx={{ fontSize: '20px', fontWeight: 800, color: '#DC2626' }}>
+                  <Typography sx={{ fontSize: '20px', fontWeight: 800, color: '#1D4ED8' }}>
                     ₹{lineCalculations.grandTotal}
                   </Typography>
                 </Box>
@@ -1745,33 +1948,33 @@ export const GstBillPage: FC = () => {
                 <Divider sx={{ my: 1, borderColor: '#E2E8F0' }} />
 
                 {/* Sales Turnover (Composition Scheme) Auto-Computed Box */}
-                <Box sx={{ p: 2, backgroundColor: '#FEF2F2', borderRadius: '10px', border: '1px solid #FECACA' }}>
-                  <Typography sx={{ fontSize: '13px', fontWeight: 800, color: '#991B1B', textDecoration: 'underline', mb: 1.5 }}>
+                <Box sx={{ p: 2, backgroundColor: '#EFF6FF', borderRadius: '10px', border: '1px solid #BFDBFE' }}>
+                  <Typography sx={{ fontSize: '13px', fontWeight: 800, color: '#1E3A8A', textDecoration: 'underline', mb: 1.5 }}>
                     Sales Turnover
                   </Typography>
 
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.8 }}>
-                    <Typography sx={{ fontSize: '12px', color: '#7F1D1D' }}>Upto Previous Bill Rs. :</Typography>
-                    <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#991B1B' }}>
+                    <Typography sx={{ fontSize: '12px', color: '#1E3A8A' }}>Upto Previous Bill Rs. :</Typography>
+                    <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#1D4ED8' }}>
                       ₹{parseFloat(lineCalculations.previousTurnover).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </Typography>
                   </Box>
 
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.8 }}>
-                    <Typography sx={{ fontSize: '12px', color: '#7F1D1D' }}>This Bill Rs. :</Typography>
-                    <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#991B1B' }}>
+                    <Typography sx={{ fontSize: '12px', color: '#1E3A8A' }}>This Bill Rs. :</Typography>
+                    <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#1D4ED8' }}>
                       ₹{parseFloat(lineCalculations.thisBillTurnover).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </Typography>
                   </Box>
 
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', pt: 0.8, borderTop: '1px solid #FECACA' }}>
-                    <Typography sx={{ fontSize: '12.5px', fontWeight: 800, color: '#7F1D1D' }}>Total Turnover Rs. :</Typography>
-                    <Typography sx={{ fontSize: '12.5px', fontWeight: 800, color: '#991B1B' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', pt: 0.8, borderTop: '1px solid #BFDBFE' }}>
+                    <Typography sx={{ fontSize: '12.5px', fontWeight: 800, color: '#1E3A8A' }}>Total Turnover Rs. :</Typography>
+                    <Typography sx={{ fontSize: '12.5px', fontWeight: 800, color: '#1D4ED8' }}>
                       ₹{parseFloat(lineCalculations.totalTurnover).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </Typography>
                   </Box>
 
-                  <Typography sx={{ fontSize: '10.5px', fontWeight: 700, color: '#B91C1C', mt: 1.5, fontStyle: 'italic', lineHeight: 1.3 }}>
+                  <Typography sx={{ fontSize: '10.5px', fontWeight: 700, color: '#1E40AF', mt: 1.5, fontStyle: 'italic', lineHeight: 1.3 }}>
                     "we are liable to pay Composition Tax Under section 10 of GST Act 2017"
                   </Typography>
                 </Box>
@@ -1786,11 +1989,13 @@ export const GstBillPage: FC = () => {
                   onClick={() => handleSaveGstBill('print')}
                   startIcon={savingBill ? <CircularProgress size={18} color="inherit" /> : <PrintOutlinedIcon />}
                   sx={{
-                    backgroundColor: '#DC2626',
+                    background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
                     py: 1.2,
                     fontWeight: 800,
                     fontSize: '14px',
-                    '&:hover': { backgroundColor: '#B91C1C' },
+                    border: '1.5px solid #FACC15',
+                    boxShadow: '0 2px 8px rgba(29, 78, 216, 0.3)',
+                    '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' },
                   }}
                 >
                   Save & Print Tax Invoice
@@ -1905,10 +2110,12 @@ export const GstBillPage: FC = () => {
                 }}
                 startIcon={<AddRoundedIcon />}
                 sx={{
-                  backgroundColor: '#DC2626',
+                  background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
+                  color: '#FFFFFF',
+                  border: '1px solid #FACC15',
                   fontWeight: 700,
                   fontSize: '12px',
-                  '&:hover': { backgroundColor: '#B91C1C' },
+                  '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' },
                 }}
               >
                 + New Bill
@@ -1919,7 +2126,7 @@ export const GstBillPage: FC = () => {
           {/* Table */}
           {loadingHistory ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-              <CircularProgress size={32} sx={{ color: '#DC2626' }} />
+              <CircularProgress size={32} sx={{ color: '#1D4ED8' }} />
             </Box>
           ) : (
             <TableContainer sx={{ border: '1px solid #E2E8F0', borderRadius: '8px' }}>
@@ -1955,7 +2162,7 @@ export const GstBillPage: FC = () => {
 
                       return (
                         <TableRow key={index} sx={{ '&:hover': { backgroundColor: '#F8FAFC' } }}>
-                          <TableCell sx={{ fontWeight: 800, color: '#B91C1C' }}>{bill.billNo}</TableCell>
+                          <TableCell sx={{ fontWeight: 800, color: '#1D4ED8' }}>{bill.billNo}</TableCell>
                           <TableCell>{bill.date}</TableCell>
                           <TableCell sx={{ fontWeight: 600 }}>{bill.customerName}</TableCell>
                           <TableCell>
@@ -2001,7 +2208,7 @@ export const GstBillPage: FC = () => {
                                 </IconButton>
                               </Tooltip>
                               <Tooltip title="Delete Invoice">
-                                <IconButton size="small" onClick={() => handleDeleteHistory(bill)} sx={{ color: '#EF4444' }}>
+                                <IconButton size="small" onClick={() => handleDeleteHistory(bill)} sx={{ color: '#64748B', '&:hover': { color: '#B45309', backgroundColor: '#FEF3C7' } }}>
                                   <DeleteOutlineRoundedIcon sx={{ fontSize: 18 }} />
                                 </IconButton>
                               </Tooltip>

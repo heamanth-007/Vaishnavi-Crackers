@@ -171,20 +171,21 @@ export const GstBillPrintModal: React.FC<GstBillPrintModalProps> = ({ open, onCl
             px: { xs: 2, sm: 3 },
             py: 1.8,
             gap: { xs: 1.2, sm: 0 },
-            background: 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)',
+            background: 'linear-gradient(135deg, #0B0F19 0%, #111827 40%, #1E3A8A 100%)',
+            borderBottom: '2.5px solid #EAB308',
             color: '#FFFFFF',
           }}
         >
           <Box sx={{ width: { xs: '100%', sm: 'auto' } }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography sx={{ fontSize: '16px', fontWeight: 800, letterSpacing: '-0.01em' }}>
+              <Typography sx={{ fontSize: '16px', fontWeight: 800, letterSpacing: '-0.01em', color: '#FFFFFF' }}>
                 GST Tax Invoice - #{bill.billNo || 'New'}
               </Typography>
               <IconButton onClick={onClose} sx={{ display: { xs: 'flex', sm: 'none' }, color: '#FFFFFF', p: 0.5 }}>
                 <CloseRoundedIcon sx={{ fontSize: 22 }} />
               </IconButton>
             </Box>
-            <Typography sx={{ fontSize: '12px', color: '#FEE2E2', fontWeight: 500 }}>
+            <Typography sx={{ fontSize: '12px', color: '#FACC15', fontWeight: 600 }}>
               Customer: {bill.customerName || 'Walk-in'} | Date: {bill.date}
             </Typography>
           </Box>
@@ -194,12 +195,12 @@ export const GstBillPrintModal: React.FC<GstBillPrintModalProps> = ({ open, onCl
               variant="contained"
               disableElevation
               onClick={handlePrint}
-              startIcon={<PrintOutlinedIcon sx={{ fontSize: '18px !important', color: '#DC2626' }} />}
+              startIcon={<PrintOutlinedIcon sx={{ fontSize: '18px !important', color: '#0B0F19' }} />}
               sx={{
                 flex: { xs: 1, sm: 'none' },
-                backgroundColor: '#FFFFFF',
-                color: '#DC2626',
-                border: '1px solid #E2E8F0',
+                backgroundColor: '#FACC15',
+                color: '#0B0F19',
+                border: '1.5px solid #EAB308',
                 fontSize: '13px',
                 fontWeight: 700,
                 textTransform: 'none',
@@ -207,7 +208,7 @@ export const GstBillPrintModal: React.FC<GstBillPrintModalProps> = ({ open, onCl
                 py: 0.6,
                 borderRadius: '6px',
                 '&:hover': {
-                  backgroundColor: '#F8FAFC',
+                  backgroundColor: '#EAB308',
                 },
               }}
             >
@@ -225,8 +226,8 @@ export const GstBillPrintModal: React.FC<GstBillPrintModalProps> = ({ open, onCl
           sx={{
             px: 3,
             py: 1.2,
-            backgroundColor: '#FEF2F2',
-            borderBottom: '1px solid #FECACA',
+            backgroundColor: '#EFF6FF',
+            borderBottom: '1px solid #BFDBFE',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -235,11 +236,11 @@ export const GstBillPrintModal: React.FC<GstBillPrintModalProps> = ({ open, onCl
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <LayersOutlinedIcon sx={{ fontSize: 18, color: '#B91C1C' }} />
-            <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#991B1B' }}>
+            <LayersOutlinedIcon sx={{ fontSize: 18, color: '#1D4ED8' }} />
+            <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#1E3A8A' }}>
               Print Output:
             </Typography>
-            <Typography sx={{ fontSize: '12px', color: '#7F1D1D', fontWeight: 500 }}>
+            <Typography sx={{ fontSize: '12px', color: '#1E40AF', fontWeight: 500 }}>
               Single Copy (ORIGINAL) • Exact Composition Scheme Format
             </Typography>
           </Box>
@@ -247,7 +248,7 @@ export const GstBillPrintModal: React.FC<GstBillPrintModalProps> = ({ open, onCl
             size="small"
             label="Single Copy (ORIGINAL)"
             sx={{
-              backgroundColor: '#DC2626',
+              backgroundColor: '#1D4ED8',
               color: '#FFFFFF',
               fontWeight: 700,
               fontSize: '11px',
@@ -317,13 +318,13 @@ export const GstBillPrintModal: React.FC<GstBillPrintModalProps> = ({ open, onCl
               disabled={downloading || sharing}
               startIcon={downloading ? <CircularProgress size={16} color="inherit" /> : <PictureAsPdfRoundedIcon />}
               sx={{
-                color: '#DC2626',
-                borderColor: '#FCA5A5',
+                color: '#1D4ED8',
+                borderColor: '#93C5FD',
                 px: 2,
                 py: 1,
                 fontWeight: 700,
                 width: { xs: '100%', sm: 'auto' },
-                '&:hover': { backgroundColor: '#FEF2F2', borderColor: '#DC2626' },
+                '&:hover': { backgroundColor: '#EFF6FF', borderColor: '#1D4ED8' },
               }}
             >
               {downloading ? 'Creating PDF...' : 'Download PDF'}
@@ -353,13 +354,16 @@ export const GstBillPrintModal: React.FC<GstBillPrintModalProps> = ({ open, onCl
               variant="contained"
               startIcon={<PrintOutlinedIcon />}
               sx={{
-                backgroundColor: '#DC2626',
+                background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
+                color: '#FFFFFF',
                 px: 2.5,
                 py: 1.1,
                 fontWeight: 800,
-                boxShadow: '0 4px 12px rgba(220, 38, 38, 0.3)',
+                borderRadius: '6px',
+                border: '1.5px solid #FACC15',
+                boxShadow: '0 4px 12px rgba(29, 78, 216, 0.3)',
                 width: { xs: '100%', sm: 'auto' },
-                '&:hover': { backgroundColor: '#B91C1C' },
+                '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' },
               }}
             >
               Print Tax Invoice

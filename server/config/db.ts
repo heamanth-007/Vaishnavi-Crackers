@@ -4,7 +4,7 @@ export const connectDB = async (retryCount = 0): Promise<void> => {
   let uri =
     process.env.MONGODB_URI ||
     process.env.MONGO_URI ||
-    'mongodb://127.0.0.1:27017/vaishnavi_crackers_db';
+    'mongodb+srv://chitrakala2410_db_user:QGnpCxgZno2Ua5zw@cluster0.61n1ggu.mongodb.net/vaishnavi_crackers_db?appName=Cluster0';
 
   // Strip accidental angle brackets from connection strings if present
   if (uri.includes('<') && uri.includes('>')) {

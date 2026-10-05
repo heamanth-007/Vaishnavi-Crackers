@@ -252,7 +252,7 @@ export const CustomersPage: FC<CustomersPageProps> = ({ onAddNew, onSelectCustom
             sx={{
               fontSize: '28px',
               fontWeight: 800,
-              color: '#B91C1C',
+              color: '#0B0F19',
               letterSpacing: '-0.025em',
               lineHeight: 1.2,
             }}
@@ -286,17 +286,17 @@ export const CustomersPage: FC<CustomersPageProps> = ({ onAddNew, onSelectCustom
               boxSizing: 'border-box',
               transition: 'all 0.2s',
               '&:hover': {
-                borderColor: '#F59E0B',
+                borderColor: '#EAB308',
               },
               '&:focus-within': {
-                borderColor: '#DC2626',
-                boxShadow: '0 0 0 3px rgba(220, 38, 38, 0.12)',
+                borderColor: '#1D4ED8',
+                boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.15)',
               },
             }}
           >
             <SearchRoundedIcon
               sx={{
-                color: '#D97706',
+                color: '#1D4ED8',
                 fontSize: 19,
                 mr: 1,
               }}
@@ -357,9 +357,9 @@ export const CustomersPage: FC<CustomersPageProps> = ({ onAddNew, onSelectCustom
               onClick={onAddNew}
               startIcon={<AddRoundedIcon sx={{ fontSize: 19 }} />}
               sx={{
-                background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+                background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
                 color: '#FFFFFF',
-                border: '1px solid #F59E0B',
+                border: '1.5px solid #FACC15',
                 height: '38px',
                 px: 2,
                 borderRadius: '8px',
@@ -368,9 +368,9 @@ export const CustomersPage: FC<CustomersPageProps> = ({ onAddNew, onSelectCustom
                 textTransform: 'none',
                 letterSpacing: '-0.01em',
                 whiteSpace: 'nowrap',
-                boxShadow: '0 2px 8px rgba(220, 38, 38, 0.25)',
+                boxShadow: '0 2px 8px rgba(29, 78, 216, 0.25)',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #B91C1C 0%, #991B1B 100%)',
+                  background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
                 },
               }}
             >
@@ -443,7 +443,7 @@ export const CustomersPage: FC<CustomersPageProps> = ({ onAddNew, onSelectCustom
                     px: 2.5,
                     fontSize: '12px',
                     fontWeight: 800,
-                    color: '#B91C1C',
+                    color: '#1D4ED8',
                     letterSpacing: '0.04em',
                     borderBottom: '2px solid #E2E8F0',
                     width: '130px',
@@ -503,7 +503,7 @@ export const CustomersPage: FC<CustomersPageProps> = ({ onAddNew, onSelectCustom
               {loading ? (
                 <TableRow>
                   <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
-                    <CircularProgress size={32} sx={{ color: '#DC2626' }} />
+                    <CircularProgress size={32} sx={{ color: '#1D4ED8' }} />
                   </TableCell>
                 </TableRow>
               ) : filteredCustomers.length === 0 ? (
@@ -530,7 +530,7 @@ export const CustomersPage: FC<CustomersPageProps> = ({ onAddNew, onSelectCustom
                       sx={{
                         transition: 'background-color 0.15s ease',
                         '&:hover': {
-                          backgroundColor: '#FEFDF5',
+                          backgroundColor: '#F8FAFC',
                         },
                       }}
                     >
@@ -570,8 +570,8 @@ export const CustomersPage: FC<CustomersPageProps> = ({ onAddNew, onSelectCustom
                               width: 34,
                               height: 34,
                               borderRadius: '50%',
-                              backgroundColor: customer.avatarBg || '#F1F5F9',
-                              color: customer.avatarColor || '#B91C1C',
+                              backgroundColor: customer.avatarBg || '#EFF6FF',
+                              color: customer.avatarColor || '#1D4ED8',
                               border: '1px solid #E2E8F0',
                               display: 'flex',
                               alignItems: 'center',
@@ -591,7 +591,7 @@ export const CustomersPage: FC<CustomersPageProps> = ({ onAddNew, onSelectCustom
                                 color: '#1F1714',
                                 letterSpacing: '-0.01em',
                                 '&:hover': {
-                                  color: '#DC2626',
+                                  color: '#1D4ED8',
                                   textDecoration: 'underline',
                                 },
                               }}
@@ -667,7 +667,7 @@ export const CustomersPage: FC<CustomersPageProps> = ({ onAddNew, onSelectCustom
                       >
                         {pendingDueNum > 0 ? (
                           <Box sx={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                            <Typography sx={{ fontSize: '13.5px', fontWeight: 800, color: '#DC2626' }}>
+                            <Typography sx={{ fontSize: '13.5px', fontWeight: 800, color: '#D97706' }}>
                               ₹{pendingDueNum.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                             </Typography>
                             <Chip
@@ -677,8 +677,8 @@ export const CustomersPage: FC<CustomersPageProps> = ({ onAddNew, onSelectCustom
                                 height: '18px',
                                 fontSize: '10px',
                                 fontWeight: 700,
-                                backgroundColor: '#FEE2E2',
-                                color: '#DC2626',
+                                backgroundColor: '#FEF3C7',
+                                color: '#B45309',
                                 borderRadius: '4px',
                                 mt: 0.2,
                               }}
@@ -807,15 +807,16 @@ export const CustomersPage: FC<CustomersPageProps> = ({ onAddNew, onSelectCustom
                               size="small"
                               onClick={() => handleDelete(recordId)}
                               sx={{
-                                color: '#DC2626',
-                                backgroundColor: '#FEF2F2',
-                                border: '1px solid #FECACA',
+                                color: '#64748B',
+                                backgroundColor: '#F8FAFC',
+                                border: '1px solid #E2E8F0',
                                 borderRadius: '6px',
                                 p: 0.7,
+                                transition: 'all 0.15s ease',
                                 '&:hover': {
-                                  color: '#FFFFFF',
-                                  backgroundColor: '#DC2626',
-                                  borderColor: '#DC2626',
+                                  color: '#B45309',
+                                  backgroundColor: '#FEF3C7',
+                                  borderColor: '#FDE68A',
                                 },
                               }}
                             >
@@ -1035,13 +1036,14 @@ export const CustomersPage: FC<CustomersPageProps> = ({ onAddNew, onSelectCustom
             onClick={handleSaveEdit}
             disabled={editLoading}
             sx={{
-              background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+              background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
               color: '#FFFFFF',
               fontWeight: 700,
               textTransform: 'none',
               px: 2.5,
               borderRadius: '6px',
-              '&:hover': { background: 'linear-gradient(135deg, #B91C1C 0%, #991B1B 100%)' },
+              border: '1.5px solid #FACC15',
+              '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' },
             }}
           >
             {editLoading ? 'Saving...' : 'Save Changes'}

@@ -38,6 +38,7 @@ import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
 import { CustomersApi, ParticularsApi, ProductsApi, PriceListsApi } from '../services/api';
 import { printCustomerListDirectly } from '../utils/printUtils';
+import { formatProductCode } from '../utils/productUtils';
 import { DateRangePrintModal } from './DateRangePrintModal';
 import { BillPrintModal } from './BillPrintModal';
 import type { BillPrintData } from './BillPrintTemplate';
@@ -99,7 +100,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
   // Edit Bill State & Catalog
   const [openEditBillModal, setOpenEditBillModal] = useState(false);
   const [editingBill, setEditingBill] = useState<any | null>(null);
-  const [productCatalog, setProductCatalog] = useState<{ id: string; name: string; rate?: number; unit?: string }[]>([]);
+  const [productCatalog, setProductCatalog] = useState<{ id: string; name: string; rate?: number; unit?: string; productCode?: string }[]>([]);
   const [editBillFormData, setEditBillFormData] = useState<{
     billNo: string;
     date: string;
@@ -177,10 +178,16 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
         ProductsApi.getAll().catch(() => []),
         PriceListsApi.getAll().catch(() => []),
       ]);
-      const map = new Map<string, { id: string; name: string; rate?: number; unit?: string }>();
+      const map = new Map<string, { id: string; name: string; rate?: number; unit?: string; productCode?: string }>();
       if (Array.isArray(prods)) {
         prods.forEach((p: any) => {
-          if (p.name) map.set(p.name.trim().toLowerCase(), { id: p._id || p.id, name: p.name.trim(), rate: p.rate || 0, unit: p.unit || 'Box' });
+          if (p.name) map.set(p.name.trim().toLowerCase(), {
+            id: p._id || p.id,
+            name: p.name.trim(),
+            rate: p.rate || 0,
+            unit: p.unit || 'Box',
+            productCode: formatProductCode(p.productCode || p.sku || p.slNo),
+          });
         });
       }
       if (Array.isArray(priceList)) {
@@ -188,11 +195,13 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
           if (item.itemName) {
             const key = item.itemName.trim().toLowerCase();
             const existing = map.get(key);
+            const code = formatProductCode(item.productCode || item.code || item.slNo || existing?.productCode);
             map.set(key, {
               id: item._id || item.id || existing?.id,
               name: item.itemName.trim(),
               rate: item.rate || existing?.rate || 0,
               unit: item.unit || existing?.unit || 'Box',
+              productCode: code,
             });
           }
         });
@@ -539,11 +548,11 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
             textTransform: 'none',
             letterSpacing: '-0.01em',
             transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-            backgroundColor: activeView === 'customers' ? '#B91C1C' : 'transparent',
+            backgroundColor: activeView === 'customers' ? '#1D4ED8' : 'transparent',
             color: activeView === 'customers' ? '#FFFFFF' : '#475569',
-            boxShadow: activeView === 'customers' ? '0 2px 8px rgba(185, 28, 28, 0.3)' : 'none',
+            boxShadow: activeView === 'customers' ? '0 2px 8px rgba(29, 78, 216, 0.3)' : 'none',
             '&:hover': {
-              backgroundColor: activeView === 'customers' ? '#991B1B' : '#F1F5F9',
+              backgroundColor: activeView === 'customers' ? '#1E40AF' : '#F1F5F9',
             },
           }}
         >
@@ -575,11 +584,11 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
             textTransform: 'none',
             letterSpacing: '-0.01em',
             transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-            backgroundColor: activeView === 'bills' ? '#B91C1C' : 'transparent',
+            backgroundColor: activeView === 'bills' ? '#1D4ED8' : 'transparent',
             color: activeView === 'bills' ? '#FFFFFF' : '#475569',
-            boxShadow: activeView === 'bills' ? '0 2px 8px rgba(185, 28, 28, 0.3)' : 'none',
+            boxShadow: activeView === 'bills' ? '0 2px 8px rgba(29, 78, 216, 0.3)' : 'none',
             '&:hover': {
-              backgroundColor: activeView === 'bills' ? '#991B1B' : '#F1F5F9',
+              backgroundColor: activeView === 'bills' ? '#1E40AF' : '#F1F5F9',
             },
           }}
         >
@@ -621,7 +630,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                   sx={{
                     fontSize: { xs: '24px', sm: '28px', md: '30px' },
                     fontWeight: 800,
-                    color: '#B91C1C',
+                    color: '#0B0F19',
                     letterSpacing: '-0.025em',
                     lineHeight: 1.2,
                   }}
@@ -668,17 +677,17 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                   boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
                   transition: 'all 0.2s',
                   '&:hover': {
-                    borderColor: '#F59E0B',
+                    borderColor: '#EAB308',
                   },
                   '&:focus-within': {
-                    borderColor: '#DC2626',
-                    boxShadow: '0 0 0 3px rgba(220, 38, 38, 0.12)',
+                    borderColor: '#1D4ED8',
+                    boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.15)',
                   },
                 }}
               >
                 <SearchRoundedIcon
                   sx={{
-                    color: '#D97706',
+                    color: '#1D4ED8',
                     fontSize: 20,
                     mr: 1,
                   }}
@@ -744,9 +753,9 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                   onClick={onAddNewCustomer}
                   startIcon={<AddRoundedIcon sx={{ fontSize: 20 }} />}
                   sx={{
-                    background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+                    background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
                     color: '#FFFFFF',
-                    border: '1px solid #F59E0B',
+                    border: '1.5px solid #FACC15',
                     height: '40px',
                     px: 2.4,
                     borderRadius: '8px',
@@ -755,9 +764,9 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                     textTransform: 'none',
                     letterSpacing: '-0.01em',
                     whiteSpace: 'nowrap',
-                    boxShadow: '0 2px 8px rgba(220, 38, 38, 0.25)',
+                    boxShadow: '0 2px 8px rgba(29, 78, 216, 0.25)',
                     '&:hover': {
-                      background: 'linear-gradient(135deg, #B91C1C 0%, #991B1B 100%)',
+                      background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
                     },
                   }}
                 >
@@ -791,7 +800,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                   height: 44,
                   borderRadius: '10px',
                   backgroundColor: '#F1F5F9',
-                  color: '#B91C1C',
+                  color: '#1D4ED8',
                   border: '1px solid #E2E8F0',
                   display: 'flex',
                   alignItems: 'center',
@@ -802,10 +811,10 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                 <PeopleAltRoundedIcon sx={{ fontSize: 24 }} />
               </Box>
               <Box>
-                <Typography sx={{ fontSize: '13px', fontWeight: 700, color: '#786C58' }}>
+                <Typography sx={{ fontSize: '13px', fontWeight: 700, color: '#64748B' }}>
                   Total Registered Customers
                 </Typography>
-                <Typography sx={{ fontSize: '22px', fontWeight: 900, color: '#B91C1C', lineHeight: 1.2, mt: 0.2 }}>
+                <Typography sx={{ fontSize: '22px', fontWeight: 900, color: '#1D4ED8', lineHeight: 1.2, mt: 0.2 }}>
                   {customers.length}
                 </Typography>
               </Box>
@@ -894,7 +903,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                   {loading ? (
                     <TableRow>
                       <TableCell colSpan={4} align="center" sx={{ py: 6 }}>
-                        <CircularProgress size={32} sx={{ color: '#DC2626' }} />
+                        <CircularProgress size={32} sx={{ color: '#1D4ED8' }} />
                       </TableCell>
                     </TableRow>
                   ) : filteredCustomers.length === 0 ? (
@@ -916,7 +925,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                           sx={{
                             transition: 'background-color 0.15s ease',
                             '&:hover': {
-                              backgroundColor: '#FEFDF5',
+                              backgroundColor: '#F8FAFC',
                             },
                           }}
                         >
@@ -926,7 +935,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                               py: 1.8,
                               px: 2.5,
                               fontSize: '13px',
-                              color: '#B91C1C',
+                              color: '#1D4ED8',
                               fontWeight: 800,
                               borderBottom: isLast ? 'none' : '1px solid #F1F5F9',
                             }}
@@ -956,8 +965,8 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                                   width: 38,
                                   height: 38,
                                   borderRadius: '50%',
-                                  backgroundColor: customer.avatarBg || '#F1F5F9',
-                                  color: customer.avatarColor || '#B91C1C',
+                                  backgroundColor: customer.avatarBg || '#EFF6FF',
+                                  color: customer.avatarColor || '#1D4ED8',
                                   border: '1px solid #E2E8F0',
                                   display: 'flex',
                                   alignItems: 'center',
@@ -977,7 +986,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                                     color: '#1F1714',
                                     letterSpacing: '-0.01em',
                                     '&:hover': {
-                                      color: '#DC2626',
+                                      color: '#1D4ED8',
                                       textDecoration: 'underline',
                                     },
                                   }}
@@ -1090,16 +1099,16 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                                   size="small"
                                   onClick={() => handleDelete(recordId, customer.name)}
                                   sx={{
-                                    color: '#DC2626',
-                                    backgroundColor: '#FEF2F2',
-                                    border: '1px solid #FECACA',
+                                    color: '#64748B',
+                                    backgroundColor: '#F8FAFC',
+                                    border: '1px solid #E2E8F0',
                                     borderRadius: '6px',
                                     p: 0.7,
                                     transition: 'all 0.15s ease',
                                     '&:hover': {
-                                      color: '#FFFFFF',
-                                      backgroundColor: '#DC2626',
-                                      borderColor: '#DC2626',
+                                      color: '#B45309',
+                                      backgroundColor: '#FEF3C7',
+                                      borderColor: '#FDE68A',
                                     },
                                   }}
                                 >
@@ -1144,7 +1153,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#B91C1C',
+                    color: '#1D4ED8',
                     border: '1px solid #E2E8F0',
                   }}
                 >
@@ -1260,9 +1269,9 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                     width: 44,
                     height: 44,
                     borderRadius: '10px',
-                    backgroundColor: '#F1F5F9',
-                    color: '#B91C1C',
-                    border: '1px solid #E2E8F0',
+                    backgroundColor: '#EFF6FF',
+                    color: '#1D4ED8',
+                    border: '1px solid #BFDBFE',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -1275,7 +1284,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                   <Typography sx={{ fontSize: '13px', fontWeight: 700, color: '#786C58' }}>
                     Total Generated Bills
                   </Typography>
-                  <Typography sx={{ fontSize: '22px', fontWeight: 900, color: '#B91C1C', lineHeight: 1.2, mt: 0.2 }}>
+                  <Typography sx={{ fontSize: '22px', fontWeight: 900, color: '#1D4ED8', lineHeight: 1.2, mt: 0.2 }}>
                     {recentBills.length}
                   </Typography>
                 </Box>
@@ -1287,9 +1296,9 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                     width: 44,
                     height: 44,
                     borderRadius: '10px',
-                    backgroundColor: '#F1F5F9',
-                    color: '#B91C1C',
-                    border: '1px solid #E2E8F0',
+                    backgroundColor: '#EFF6FF',
+                    color: '#1D4ED8',
+                    border: '1px solid #BFDBFE',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -1302,7 +1311,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                   <Typography sx={{ fontSize: '13px', fontWeight: 700, color: '#786C58' }}>
                     Total Invoiced Amount
                   </Typography>
-                  <Typography sx={{ fontSize: '22px', fontWeight: 900, color: '#B91C1C', lineHeight: 1.2, mt: 0.2 }}>
+                  <Typography sx={{ fontSize: '22px', fontWeight: 900, color: '#1D4ED8', lineHeight: 1.2, mt: 0.2 }}>
                     ₹{totalBillsAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </Typography>
                 </Box>
@@ -1353,7 +1362,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                   {loadingRecentBills ? (
                     <TableRow>
                       <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
-                        <CircularProgress size={32} sx={{ color: '#DC2626' }} />
+                        <CircularProgress size={32} sx={{ color: '#1D4ED8' }} />
                       </TableCell>
                     </TableRow>
                   ) : filteredRecentBills.length === 0 ? (
@@ -1369,8 +1378,8 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                       const prodCount = (bill.products || []).length;
 
                       return (
-                        <TableRow key={bill._id || bill.id || index} sx={{ '&:hover': { backgroundColor: '#FEFDF5' } }}>
-                          <TableCell sx={{ fontSize: '13.5px', fontWeight: 800, color: '#B91C1C', borderBottom: isLast ? 'none' : '1px solid #F1F5F9' }}>
+                        <TableRow key={bill._id || bill.id || index} sx={{ '&:hover': { backgroundColor: '#F8FAFC' } }}>
+                          <TableCell sx={{ fontSize: '13.5px', fontWeight: 800, color: '#1D4ED8', borderBottom: isLast ? 'none' : '1px solid #F1F5F9' }}>
                             #{bill.billNo}
                           </TableCell>
                           <TableCell sx={{ fontSize: '13px', fontWeight: 600, color: '#57463A', borderBottom: isLast ? 'none' : '1px solid #F1F5F9' }}>
@@ -1386,7 +1395,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                               sx={{ fontSize: '11.5px', fontWeight: 700, backgroundColor: '#F8FAFC', color: '#334155', border: '1px solid #E2E8F0' }}
                             />
                           </TableCell>
-                          <TableCell align="right" sx={{ fontSize: '14.5px', fontWeight: 800, color: '#B91C1C', borderBottom: isLast ? 'none' : '1px solid #F1F5F9' }}>
+                          <TableCell align="right" sx={{ fontSize: '14.5px', fontWeight: 800, color: '#1D4ED8', borderBottom: isLast ? 'none' : '1px solid #F1F5F9' }}>
                             ₹{totalAmt.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </TableCell>
                           <TableCell align="center" sx={{ borderBottom: isLast ? 'none' : '1px solid #F1F5F9' }}>
@@ -1443,12 +1452,13 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                                   size="small"
                                   onClick={() => handleDeleteRecentBill(bill)}
                                   sx={{
-                                    color: '#DC2626',
-                                    backgroundColor: '#FEF2F2',
-                                    border: '1px solid #FECACA',
+                                    color: '#64748B',
+                                    backgroundColor: '#F8FAFC',
+                                    border: '1px solid #E2E8F0',
                                     borderRadius: '6px',
                                     p: 0.6,
-                                    '&:hover': { color: '#FFFFFF', backgroundColor: '#DC2626' },
+                                    transition: 'all 0.15s ease',
+                                    '&:hover': { color: '#B45309', backgroundColor: '#FEF3C7', borderColor: '#FDE68A' },
                                   }}
                                 >
                                   <DeleteOutlineRoundedIcon sx={{ fontSize: 16 }} />
@@ -1483,7 +1493,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
           },
         }}
       >
-        <DialogTitle sx={{ fontWeight: 800, fontSize: '18px', color: '#B91C1C', pb: 1 }}>
+        <DialogTitle sx={{ fontWeight: 800, fontSize: '18px', color: '#0B0F19', pb: 1 }}>
           Edit Customer Details
         </DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '16px !important' }}>
@@ -1545,11 +1555,14 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
             onClick={handleSaveEdit}
             disabled={editLoading}
             sx={{
-              background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+              background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
+              color: '#FFFFFF',
+              border: '1.5px solid #FACC15',
               fontWeight: 700,
               textTransform: 'none',
               px: 2.5,
               borderRadius: '6px',
+              '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' },
             }}
           >
             {editLoading ? <CircularProgress size={20} color="inherit" /> : 'Save Changes'}
@@ -1615,7 +1628,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <ReceiptLongRoundedIcon sx={{ color: '#B91C1C', fontSize: 24 }} />
+            <ReceiptLongRoundedIcon sx={{ color: '#1D4ED8', fontSize: 24 }} />
             <Box>
               <Typography sx={{ fontWeight: 800, fontSize: '17px', color: '#1F1714', lineHeight: 1.2 }}>
                 Edit Bill #{editBillFormData.billNo}
@@ -1628,14 +1641,14 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
           <Chip
             label={editBillFormData.date || 'Today'}
             size="small"
-            sx={{ fontWeight: 700, backgroundColor: '#F1F5F9', color: '#B91C1C', border: '1px solid #E2E8F0' }}
+            sx={{ fontWeight: 700, backgroundColor: '#EFF6FF', color: '#1D4ED8', border: '1px solid #BFDBFE' }}
           />
         </DialogTitle>
 
         <DialogContent sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2.5, backgroundColor: '#FFFFFF' }}>
           {/* Bill Metadata Grid */}
           <Box sx={{ mt: 1 }}>
-            <Typography sx={{ fontSize: '13px', fontWeight: 800, color: '#B91C1C', textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1.5 }}>
+            <Typography sx={{ fontSize: '13px', fontWeight: 800, color: '#0B0F19', textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1.5 }}>
               1. Bill & Customer Details
             </Typography>
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' }, gap: 2 }}>
@@ -1649,7 +1662,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                   value={editBillFormData.billNo}
                   onChange={(e) => setEditBillFormData({ ...editBillFormData, billNo: e.target.value })}
                   slotProps={{
-                    input: { sx: { fontSize: '13.5px', fontWeight: 700, color: '#B91C1C', borderRadius: '8px' } },
+                    input: { sx: { fontSize: '13.5px', fontWeight: 700, color: '#1D4ED8', borderRadius: '8px' } },
                   }}
                 />
               </Box>
@@ -1771,7 +1784,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
           {/* Bill Items Section */}
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
-              <Typography sx={{ fontSize: '13px', fontWeight: 800, color: '#B91C1C', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <Typography sx={{ fontSize: '13px', fontWeight: 800, color: '#0B0F19', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 2. Invoice Items & Quantities
               </Typography>
               <Button
@@ -1838,7 +1851,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                     const rowAmt = (parseFloat(row.quantity) || 0) * (parseFloat(row.rate) || 0);
 
                     return (
-                      <TableRow key={index} sx={{ '&:hover': { backgroundColor: '#FEFDF5' } }}>
+                      <TableRow key={index} sx={{ '&:hover': { backgroundColor: '#F8FAFC' } }}>
                         <TableCell sx={{ fontSize: '12px', fontWeight: 700, color: '#786C58' }}>
                           {index + 1}
                         </TableCell>
@@ -1846,24 +1859,70 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                           <Autocomplete
                             freeSolo
                             options={productCatalog.map((p) => p.name)}
+                            filterOptions={(_options, { inputValue }) => {
+                              const rawQ = (inputValue || '').trim().replace(/^#+/, '');
+                              if (!rawQ) return productCatalog.map((p) => p.name);
+                              const q = rawQ.toLowerCase();
+                              const isNum = /^\d+$/.test(rawQ);
+
+                              if (isNum) {
+                                const qNum = parseInt(rawQ, 10);
+                                const qPadded = rawQ.padStart(3, '0');
+                                return productCatalog
+                                  .filter((p) => {
+                                    const codeStr = formatProductCode(p.productCode);
+                                    if (!codeStr) return false;
+                                    const optNum = parseInt(codeStr, 10);
+                                    return optNum === qNum || codeStr === rawQ || codeStr === qPadded;
+                                  })
+                                  .sort((a, b) => {
+                                    const aNum = parseInt(formatProductCode(a.productCode), 10);
+                                    const bNum = parseInt(formatProductCode(b.productCode), 10);
+                                    if (aNum === qNum && bNum !== qNum) return -1;
+                                    if (bNum === qNum && aNum !== qNum) return 1;
+                                    return aNum - bNum;
+                                  })
+                                  .map((p) => p.name);
+                              }
+
+                              return productCatalog
+                                .filter((p) => p.name.toLowerCase().includes(q))
+                                .map((p) => p.name);
+                            }}
                             value={row.particular}
                             onInputChange={(_e, val) => {
-                              const match = productCatalog.find((p) => p.name.toLowerCase() === val.toLowerCase());
-                              handleEditBillProductChange(index, 'particular', val);
+                              const clean = (val || '').trim().replace(/^#+/, '');
+                              const isNum = /^\d+$/.test(clean);
+                              let match: any;
+                              if (isNum) {
+                                const qNum = parseInt(clean, 10);
+                                const qPadded = clean.padStart(3, '0');
+                                match = productCatalog.find((p) => {
+                                  const codeStr = formatProductCode(p.productCode);
+                                  const optNum = parseInt(codeStr, 10);
+                                  return optNum === qNum || codeStr === clean || codeStr === qPadded;
+                                });
+                              } else {
+                                match = productCatalog.find((p) => p.name.toLowerCase() === clean.toLowerCase());
+                              }
+
                               if (match) {
+                                handleEditBillProductChange(index, 'particular', match.name);
                                 if (match.rate && match.rate > 0) {
                                   handleEditBillProductChange(index, 'rate', String(match.rate));
                                 }
                                 if (match.unit) {
                                   handleEditBillProductChange(index, 'pktUnit', match.unit);
                                 }
+                              } else {
+                                handleEditBillProductChange(index, 'particular', val);
                               }
                             }}
                             renderInput={(params) => (
                               <TextField
                                 {...params}
                                 size="small"
-                                placeholder="Item name..."
+                                placeholder="Product Code or Name..."
                                 sx={{ '& .MuiOutlinedInput-root': { fontSize: '13px', fontWeight: 600, py: '2px !important', borderRadius: '6px' } }}
                               />
                             )}
@@ -1902,7 +1961,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                             }}
                           />
                         </TableCell>
-                        <TableCell align="right" sx={{ fontSize: '13.5px', fontWeight: 800, color: '#B91C1C' }}>
+                        <TableCell align="right" sx={{ fontSize: '13.5px', fontWeight: 800, color: '#1D4ED8' }}>
                           ₹{rowAmt.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </TableCell>
                         <TableCell align="center">
@@ -1910,7 +1969,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                             size="small"
                             onClick={() => handleEditBillRemoveProductRow(index)}
                             disabled={editBillFormData.products.length <= 1}
-                            sx={{ color: '#DC2626', p: 0.5 }}
+                            sx={{ color: '#64748B', p: 0.5, '&:hover': { color: '#B45309' } }}
                           >
                             <DeleteOutlineRoundedIcon sx={{ fontSize: 16 }} />
                           </IconButton>
@@ -1927,7 +1986,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
 
           {/* Bill Summary & Calculations */}
           <Box sx={{ backgroundColor: '#F8FAFC', p: 2, borderRadius: '12px', border: '1.5px solid #E2E8F0' }}>
-            <Typography sx={{ fontSize: '13px', fontWeight: 800, color: '#B91C1C', textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1.5 }}>
+            <Typography sx={{ fontSize: '13px', fontWeight: 800, color: '#0B0F19', textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1.5 }}>
               3. Summary & Financial Adjustments
             </Typography>
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', sm: 'repeat(5, 1fr)' }, gap: 2, alignItems: 'center' }}>
@@ -2020,7 +2079,7 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
                 <Typography sx={{ fontSize: '14px', fontWeight: 800, color: '#786C58' }}>
                   Grand Total:
                 </Typography>
-                <Typography sx={{ fontSize: '24px', fontWeight: 900, color: '#B91C1C' }}>
+                <Typography sx={{ fontSize: '24px', fontWeight: 900, color: '#1D4ED8' }}>
                   ₹{editBillCalculations.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </Typography>
               </Box>
@@ -2042,16 +2101,18 @@ export const AllCustomersPage: FC<AllCustomersPageProps> = ({
             onClick={handleSaveEditBill}
             disabled={editBillLoading}
             sx={{
-              background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+              background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
+              color: '#FFFFFF',
+              border: '1.5px solid #FACC15',
               fontWeight: 800,
               fontSize: '13.5px',
               textTransform: 'none',
               px: 3,
               py: 0.9,
               borderRadius: '8px',
-              boxShadow: '0 2px 8px rgba(220, 38, 38, 0.25)',
+              boxShadow: '0 2px 8px rgba(29, 78, 216, 0.25)',
               '&:hover': {
-                background: 'linear-gradient(135deg, #B91C1C 0%, #991B1B 100%)',
+                background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
               },
             }}
           >

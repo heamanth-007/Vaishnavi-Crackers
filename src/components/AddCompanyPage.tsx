@@ -51,8 +51,8 @@ export const AddCompanyPage: FC<AddCompanyPageProps> = ({
         gstin: formData.gstNumber.trim() || 'N/A',
         address: formData.registeredAddress.trim(),
         avatarLetter: formData.companyName.trim().charAt(0).toUpperCase(),
-        avatarBg: '#F1F5F9',
-        avatarColor: '#B91C1C',
+        avatarBg: '#EFF6FF',
+        avatarColor: '#1D4ED8',
       });
       if (onSubmitSuccess) {
         onSubmitSuccess();
@@ -91,7 +91,7 @@ export const AddCompanyPage: FC<AddCompanyPageProps> = ({
             fontWeight: 600,
             color: '#475569',
             cursor: 'pointer',
-            '&:hover': { color: '#B91C1C' },
+            '&:hover': { color: '#1D4ED8' },
           }}
         >
           Companies
@@ -99,7 +99,7 @@ export const AddCompanyPage: FC<AddCompanyPageProps> = ({
         <Typography
           sx={{
             fontSize: '13.5px',
-            color: '#D97706',
+            color: '#EAB308',
             userSelect: 'none',
           }}
         >
@@ -109,7 +109,7 @@ export const AddCompanyPage: FC<AddCompanyPageProps> = ({
           sx={{
             fontSize: '13.5px',
             fontWeight: 700,
-            color: '#B91C1C',
+            color: '#1D4ED8',
           }}
         >
           Add New Company
@@ -161,9 +161,9 @@ export const AddCompanyPage: FC<AddCompanyPageProps> = ({
                   height: '42px',
                   transition: 'all 0.15s ease',
                   '&:focus-within': {
-                    borderColor: '#DC2626',
+                    borderColor: '#1D4ED8',
                     backgroundColor: '#FFFFFF',
-                    boxShadow: '0 0 0 3px rgba(220, 38, 38, 0.12)',
+                    boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.15)',
                   },
                 }}
               >
@@ -209,9 +209,9 @@ export const AddCompanyPage: FC<AddCompanyPageProps> = ({
                   height: '42px',
                   transition: 'all 0.15s ease',
                   '&:focus-within': {
-                    borderColor: '#DC2626',
+                    borderColor: '#1D4ED8',
                     backgroundColor: '#FFFFFF',
-                    boxShadow: '0 0 0 3px rgba(220, 38, 38, 0.12)',
+                    boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.15)',
                   },
                 }}
               >
@@ -257,9 +257,9 @@ export const AddCompanyPage: FC<AddCompanyPageProps> = ({
                   height: '42px',
                   transition: 'all 0.15s ease',
                   '&:focus-within': {
-                    borderColor: '#DC2626',
+                    borderColor: '#1D4ED8',
                     backgroundColor: '#FFFFFF',
-                    boxShadow: '0 0 0 3px rgba(220, 38, 38, 0.12)',
+                    boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.15)',
                   },
                 }}
               >
@@ -330,13 +330,14 @@ export const AddCompanyPage: FC<AddCompanyPageProps> = ({
                 borderRadius: '8px',
                 fontSize: '13.5px',
                 fontWeight: 700,
-                background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+                background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
                 color: '#FFFFFF',
+                border: '1.5px solid #FACC15',
                 textTransform: 'none',
-                boxShadow: '0 2px 8px rgba(220, 38, 38, 0.3)',
+                boxShadow: '0 2px 8px rgba(29, 78, 216, 0.3)',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #B91C1C 0%, #991B1B 100%)',
-                  boxShadow: '0 4px 12px rgba(220, 38, 38, 0.4)',
+                  background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                  boxShadow: '0 4px 12px rgba(29, 78, 216, 0.4)',
                 },
               }}
             >

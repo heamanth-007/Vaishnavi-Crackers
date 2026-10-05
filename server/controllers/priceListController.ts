@@ -3,6 +3,18 @@ import PriceList from '../models/PriceList';
 import Category from '../models/Category';
 import { Product } from '../models/Product';
 
+export const formatProductCode = (val: any, fallbackNum?: number): string => {
+  const cleanVal = val !== undefined && val !== null ? String(val).trim().replace(/^#+/, '') : '';
+  if (cleanVal && /^\d+$/.test(cleanVal)) {
+    return cleanVal.padStart(3, '0');
+  }
+  if (cleanVal) return cleanVal;
+  if (fallbackNum !== undefined && fallbackNum !== null && !isNaN(Number(fallbackNum))) {
+    return String(fallbackNum).padStart(3, '0');
+  }
+  return '';
+};
+
 // Helper to remove noise words and standardize names
 const cleanToEnglish = (text: string): string => {
   if (!text) return '';
@@ -67,22 +79,32 @@ const syncCategoriesAndProducts = async (items: any[]) => {
       const unitVal = cleanToEnglish(String(item.unit || 'Box')) || 'Box';
       const catVal = cleanToEnglish(String(item.category || 'General')) || 'General';
 
+      const codeVal = formatProductCode(item.productCode || item.code || item.slNo);
+
       if (existingProdMap.has(nameKey)) {
-        // Update product rate/category
+        // Update product rate/category/productCode
         const existing = existingProdMap.get(nameKey);
         if (existing) {
+          const finalCode = codeVal || formatProductCode(existing.productCode || existing.sku || existing.slNo);
           await Product.findByIdAndUpdate(existing._id, {
             category: catVal,
             rate: rateVal,
             mrp: mrpVal,
             unit: unitVal,
+            productCode: finalCode,
+            sku: finalCode,
+            slNo: item.slNo || existing.slNo,
           });
         }
       } else {
         // Insert new product
         maxSlNo += 1;
+        const itemSlNo = item.slNo || maxSlNo;
+        const finalCode = codeVal || formatProductCode(itemSlNo);
         const created = await Product.create({
-          slNo: maxSlNo,
+          slNo: itemSlNo,
+          productCode: finalCode,
+          sku: finalCode,
           name: cleanName,
           category: catVal,
           rate: rateVal,
@@ -107,11 +129,25 @@ export const getPriceList = async (req: Request, res: Response): Promise<void> =
     }
 
     if (search) {
-      filter.$or = [
-        { itemName: { $regex: String(search), $options: 'i' } },
-        { category: { $regex: String(search), $options: 'i' } },
-        { batchName: { $regex: String(search), $options: 'i' } },
-      ];
+      const searchStr = String(search).trim().replace(/^#+/, '');
+      const isNum = /^\d+$/.test(searchStr);
+      if (isNum) {
+        // Pure numeric query -> ONLY match productCode or slNo. Never match itemName!
+        const numSearch = Number(searchStr);
+        const padded = searchStr.padStart(3, '0');
+        filter.$or = [
+          { slNo: numSearch },
+          { productCode: padded },
+          { productCode: searchStr },
+        ];
+      } else {
+        filter.$or = [
+          { itemName: { $regex: searchStr, $options: 'i' } },
+          { category: { $regex: searchStr, $options: 'i' } },
+          { batchName: { $regex: searchStr, $options: 'i' } },
+          { productCode: { $regex: searchStr, $options: 'i' } },
+        ];
+      }
     }
 
     const items = await PriceList.find(filter).lean().sort({ slNo: 1, createdAt: -1 });
@@ -179,8 +215,12 @@ export const bulkImportPriceList = async (req: Request, res: Response): Promise<
     const batchTitle = batchName || `Upload-${new Date().toLocaleDateString('en-GB')}`;
 
     const formattedItems = items.map((item: any, idx: number) => {
+      const calculatedSl = item.slNo || currentCount + idx + 1;
+      const rawCode = item.productCode || item.code || item['Product Code'] || item['Item Code'] || calculatedSl;
+      const code = formatProductCode(rawCode, calculatedSl);
       return {
-        slNo: item.slNo || currentCount + idx + 1,
+        slNo: calculatedSl,
+        productCode: code,
         itemName: cleanToEnglish(String(item.itemName || item.name || item['Product Name'] || item['Item Name'] || '')),
         category: cleanToEnglish(String(item.category || item.Category || 'General')) || 'General',
         unit: cleanToEnglish(String(item.unit || item.Unit || 'Box')) || 'Box',
@@ -297,5 +337,28 @@ export const clearAllPriceList = async (_req: Request, res: Response): Promise<v
     res.status(200).json({ success: true, message: 'All price list items and products cleared successfully' });
   } catch (error: any) {
     res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const fixExistingProductCodes = async () => {
+  try {
+    const priceListItems = await PriceList.find({});
+    for (const item of priceListItems) {
+      const formatted = formatProductCode(item.productCode || item.slNo, item.slNo);
+      if (item.productCode !== formatted) {
+        await PriceList.findByIdAndUpdate(item._id, { productCode: formatted });
+      }
+    }
+
+    const products = await Product.find({});
+    for (const p of products) {
+      const formatted = formatProductCode(p.productCode || p.sku || p.slNo, p.slNo);
+      if (p.productCode !== formatted || p.sku !== formatted) {
+        await Product.findByIdAndUpdate(p._id, { productCode: formatted, sku: formatted });
+      }
+    }
+    console.log('[Migration] Checked and updated product codes to standard 3-digit padding (001, etc.)');
+  } catch (err) {
+    console.error('[Migration Error] Failed to normalize product codes:', err);
   }
 };

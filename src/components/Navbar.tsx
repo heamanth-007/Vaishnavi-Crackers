@@ -115,9 +115,9 @@ export const Navbar: FC<NavbarProps> = ({
         component="header"
         sx={{
           width: '100%',
-          backgroundColor: '#FFFFFF',
-          borderBottom: '1px solid #E2E8F0',
-          background: '#FFFFFF',
+          backgroundColor: '#0B0F19',
+          borderBottom: '2px solid #EAB308',
+          background: '#0B0F19',
           px: { xs: 1.5, sm: 2.5, md: 4 },
           height: { xs: '58px', sm: '66px' },
           display: 'flex',
@@ -127,7 +127,7 @@ export const Navbar: FC<NavbarProps> = ({
           top: { xs: 'auto', md: 0 },
           zIndex: 1100,
           boxSizing: 'border-box',
-          boxShadow: '0 1px 4px rgba(0, 0, 0, 0.04)',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25)',
         }}
       >
         {/* Left Brand Identity: Logo + Firm Title */}
@@ -153,7 +153,7 @@ export const Navbar: FC<NavbarProps> = ({
               objectFit: 'contain',
               borderRadius: '8px',
               flexShrink: 0,
-              filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.1))',
+              filter: 'drop-shadow(0 2px 6px rgba(234, 179, 8, 0.3))',
             }}
           />
 
@@ -163,12 +163,16 @@ export const Navbar: FC<NavbarProps> = ({
               sx={{
                 fontWeight: 800,
                 fontSize: { xs: '14.5px', sm: '17px' },
-                color: '#B91C1C',
+                color: '#FFFFFF',
                 letterSpacing: '-0.02em',
                 lineHeight: 1.15,
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
+                transition: 'color 0.2s',
+                '&:hover': {
+                  color: '#FACC15',
+                },
               }}
             >
               {companySettings.companyName || 'Vaishnavi Crackers'}
@@ -177,7 +181,7 @@ export const Navbar: FC<NavbarProps> = ({
               sx={{
                 fontSize: { xs: '9px', sm: '10.5px' },
                 fontWeight: 700,
-                color: '#D97706',
+                color: '#FACC15',
                 letterSpacing: '0.04em',
                 textTransform: 'uppercase',
                 whiteSpace: 'nowrap',
@@ -220,11 +224,11 @@ export const Navbar: FC<NavbarProps> = ({
                   sx={{
                     fontWeight: isActive ? 800 : 600,
                     fontSize: '14px',
-                    color: isActive ? '#B91C1C' : '#475569',
+                    color: isActive ? '#FACC15' : '#94A3B8',
                     letterSpacing: '-0.01em',
                     transition: 'all 0.15s ease',
                     '&:hover': {
-                      color: '#B91C1C',
+                      color: '#FACC15',
                     },
                   }}
                 >
@@ -240,7 +244,7 @@ export const Navbar: FC<NavbarProps> = ({
                       left: 0,
                       right: 0,
                       height: '3px',
-                      background: 'linear-gradient(90deg, #DC2626 0%, #F59E0B 100%)',
+                      background: 'linear-gradient(90deg, #2563EB 0%, #EAB308 100%)',
                       borderTopLeftRadius: '3px',
                       borderTopRightRadius: '3px',
                     }}
@@ -278,13 +282,13 @@ export const Navbar: FC<NavbarProps> = ({
                     ? '#F0FDF4'
                     : backendStatus === 'checking'
                     ? '#FEFCE8'
-                    : '#FEF2F2',
+                    : '#F1F5F9',
                 border: `1px solid ${
                   backendStatus === 'connected'
                     ? '#BBF7D0'
                     : backendStatus === 'checking'
                     ? '#FEF08A'
-                    : '#FECACA'
+                    : '#CBD5E1'
                 }`,
                 cursor: backendStatus === 'disconnected' ? 'pointer' : 'default',
                 transition: 'all 0.2s ease',
@@ -301,7 +305,7 @@ export const Navbar: FC<NavbarProps> = ({
                       ? '#16A34A'
                       : backendStatus === 'checking'
                       ? '#CA8A04'
-                      : '#DC2626',
+                      : '#64748B',
                   boxShadow:
                     backendStatus === 'connected'
                       ? '0 0 0 2px rgba(22, 163, 74, 0.25)'
@@ -317,7 +321,7 @@ export const Navbar: FC<NavbarProps> = ({
                       ? '#166534'
                       : backendStatus === 'checking'
                       ? '#854D0E'
-                      : '#991B1B',
+                      : '#475569',
                   letterSpacing: '0.01em',
                   display: { xs: 'none', sm: 'inline-block' },
                 }}
@@ -359,7 +363,7 @@ export const Navbar: FC<NavbarProps> = ({
             onClick={() => setMobileDrawerOpen(true)}
             sx={{
               display: { xs: 'flex', md: 'none' },
-              color: '#B91C1C',
+              color: '#1D4ED8',
               backgroundColor: '#F8FAFC',
               border: '1px solid #E2E8F0',
               p: 0.8,
@@ -385,7 +389,7 @@ export const Navbar: FC<NavbarProps> = ({
               sx: {
                 borderRadius: '12px',
                 minWidth: '170px',
-                boxShadow: '0 8px 30px rgba(0, 0, 0, 0.08)',
+                boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
                 border: '1px solid #E2E8F0',
                 backgroundColor: '#FFFFFF',
                 mt: 1,
@@ -395,10 +399,10 @@ export const Navbar: FC<NavbarProps> = ({
         >
           <MenuItem disabled sx={{ opacity: '1 !important', py: 1.2 }}>
             <ListItemIcon>
-              <AdminPanelSettingsRoundedIcon sx={{ fontSize: 20, color: '#B91C1C' }} />
+              <AdminPanelSettingsRoundedIcon sx={{ fontSize: 20, color: '#1D4ED8' }} />
             </ListItemIcon>
             <Box>
-              <Typography sx={{ fontSize: '13px', fontWeight: 700, color: '#0F172A' }}>
+              <Typography sx={{ fontSize: '13px', fontWeight: 700, color: '#0B0F19' }}>
                 Administrator
               </Typography>
               <Typography sx={{ fontSize: '11px', color: '#D97706', fontWeight: 600 }}>
@@ -415,15 +419,15 @@ export const Navbar: FC<NavbarProps> = ({
             sx={{ py: 1 }}
           >
             <ListItemIcon>
-              <SettingsRoundedIcon sx={{ fontSize: 18, color: '#B91C1C' }} />
+              <SettingsRoundedIcon sx={{ fontSize: 18, color: '#1D4ED8' }} />
             </ListItemIcon>
-            <Typography sx={{ fontSize: '13px', fontWeight: 600, color: '#0F172A' }}>
+            <Typography sx={{ fontSize: '13px', fontWeight: 600, color: '#0B0F19' }}>
               Software Settings
             </Typography>
           </MenuItem>
-          <MenuItem onClick={handleLogoutClick} sx={{ color: '#DC2626', py: 1 }}>
+          <MenuItem onClick={handleLogoutClick} sx={{ color: '#475569', py: 1, '&:hover': { color: '#0B0F19', backgroundColor: '#F8FAFC' } }}>
             <ListItemIcon>
-              <LogoutRoundedIcon sx={{ fontSize: 18, color: '#DC2626' }} />
+              <LogoutRoundedIcon sx={{ fontSize: 18, color: '#64748B' }} />
             </ListItemIcon>
             <Typography sx={{ fontSize: '13px', fontWeight: 700 }}>
               Logout
@@ -440,8 +444,8 @@ export const Navbar: FC<NavbarProps> = ({
           gap: 1,
           px: 1.5,
           py: 0.8,
-          backgroundColor: '#FFFFFF',
-          borderBottom: '1px solid #E2E8F0',
+          backgroundColor: '#0B0F19',
+          borderBottom: '2px solid #EAB308',
           overflowX: 'auto',
           scrollbarWidth: 'none',
           '&::-webkit-scrollbar': { display: 'none' },
@@ -460,9 +464,9 @@ export const Navbar: FC<NavbarProps> = ({
                 px: 1.4,
                 py: 0.6,
                 borderRadius: '20px',
-                backgroundColor: isActive ? '#DC2626' : '#F8FAFC',
-                color: isActive ? '#FFFFFF' : '#475569',
-                border: isActive ? '1px solid #B91C1C' : '1px solid #E2E8F0',
+                backgroundColor: isActive ? '#1D4ED8' : '#1E293B',
+                color: isActive ? '#FFFFFF' : '#94A3B8',
+                border: isActive ? '1px solid #FACC15' : '1px solid #334155',
                 fontSize: '12px',
                 fontWeight: 700,
                 whiteSpace: 'nowrap',
@@ -504,19 +508,19 @@ export const Navbar: FC<NavbarProps> = ({
           <Box
             sx={{
               p: 2,
-              background: 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)',
+              background: 'linear-gradient(135deg, #0B0F19 0%, #111827 50%, #1E3A8A 100%)',
               color: '#FFFFFF',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              borderBottom: '1px solid #E2E8F0',
+              borderBottom: '2.5px solid #EAB308',
             }}
           >
             <Box>
-              <Typography sx={{ fontSize: '15px', fontWeight: 800 }}>
+              <Typography sx={{ fontSize: '15px', fontWeight: 800, color: '#FFFFFF' }}>
                 {companySettings.companyName || 'Vaishnavi Crackers'}
               </Typography>
-              <Typography sx={{ fontSize: '11px', color: '#FEF08A', fontWeight: 600 }}>
+              <Typography sx={{ fontSize: '11px', color: '#FACC15', fontWeight: 700 }}>
                 Main Navigation
               </Typography>
             </Box>
@@ -535,16 +539,16 @@ export const Navbar: FC<NavbarProps> = ({
                     onClick={() => handleTabClick(tab)}
                     sx={{
                       borderRadius: '10px',
-                      backgroundColor: isActive ? '#FEE2E2' : 'transparent',
-                      border: isActive ? '1px solid #FECACA' : '1px solid transparent',
-                      color: isActive ? '#B91C1C' : '#0F172A',
+                      backgroundColor: isActive ? '#EFF6FF' : 'transparent',
+                      border: isActive ? '1px solid #BFDBFE' : '1px solid transparent',
+                      color: isActive ? '#1D4ED8' : '#0B0F19',
                       py: 1.2,
                       '&:hover': {
                         backgroundColor: '#F8FAFC',
                       },
                     }}
                   >
-                    <ListItemIcon sx={{ color: isActive ? '#B91C1C' : '#64748B', minWidth: '36px' }}>
+                    <ListItemIcon sx={{ color: isActive ? '#1D4ED8' : '#64748B', minWidth: '36px' }}>
                       {TAB_ICONS[tab]}
                     </ListItemIcon>
                     <ListItemText
@@ -567,16 +571,16 @@ export const Navbar: FC<NavbarProps> = ({
             onClick={handleLogoutClick}
             sx={{
               borderRadius: '10px',
-              backgroundColor: '#FEF2F2',
-              border: '1px solid #FECACA',
-              color: '#DC2626',
+              backgroundColor: '#F8FAFC',
+              border: '1px solid #E2E8F0',
+              color: '#0B0F19',
               py: 1,
               '&:hover': {
-                backgroundColor: '#FEE2E2',
+                backgroundColor: '#F1F5F9',
               },
             }}
           >
-            <ListItemIcon sx={{ color: '#DC2626', minWidth: '36px' }}>
+            <ListItemIcon sx={{ color: '#475569', minWidth: '36px' }}>
               <LogoutRoundedIcon sx={{ fontSize: 20 }} />
             </ListItemIcon>
             <ListItemText

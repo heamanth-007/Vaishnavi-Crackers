@@ -37,6 +37,7 @@ import { getStoredSettings } from './SettingsPage';
 import { BillPrintModal } from './BillPrintModal';
 import type { BillPrintData } from './BillPrintTemplate';
 import { printBillDirectly } from '../utils/printUtils';
+import { formatProductCode } from '../utils/productUtils';
 
 interface ProductRowItem {
   id: string;
@@ -62,6 +63,8 @@ interface ProductCatalogOption {
   rate?: number;
   mrp?: number;
   unit?: string;
+  productCode?: string | number;
+  slNo?: number;
 }
 
 interface ParticularsPageProps {
@@ -253,6 +256,8 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
               rate: p.rate || 0,
               mrp: p.mrp || 0,
               unit: p.unit || 'Box',
+              productCode: formatProductCode(p.productCode || p.sku || p.slNo),
+              slNo: p.slNo,
             });
           }
         });
@@ -263,6 +268,7 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
           const key = (item.itemName || '').trim();
           if (key) {
             const existing = prodMap.get(key.toLowerCase());
+            const code = formatProductCode(item.productCode || item.code || item.slNo || existing?.productCode);
             prodMap.set(key.toLowerCase(), {
               id: item._id || item.id || existing?.id || key,
               name: key,
@@ -270,6 +276,8 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
               rate: item.rate !== undefined && item.rate > 0 ? item.rate : (existing?.rate || 0),
               mrp: item.mrp !== undefined && item.mrp > 0 ? item.mrp : (existing?.mrp || 0),
               unit: item.unit || existing?.unit || 'Box',
+              productCode: code,
+              slNo: item.slNo || existing?.slNo,
             });
           }
         });
@@ -597,7 +605,7 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
             sx={{
               fontSize: { xs: '24px', sm: '28px', md: '30px' },
               fontWeight: 800,
-              color: '#B91C1C',
+              color: '#0B0F19',
               letterSpacing: '-0.025em',
               lineHeight: 1.2,
             }}
@@ -627,9 +635,9 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
               px: 2,
               height: '38px',
               '&:hover': {
-                borderColor: '#DC2626',
-                color: '#DC2626',
-                backgroundColor: '#FEF2F2',
+                borderColor: '#1D4ED8',
+                color: '#1D4ED8',
+                backgroundColor: '#EFF6FF',
               },
             }}
           >
@@ -654,7 +662,7 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
               boxSizing: 'border-box',
             }}
           >
-            <Typography sx={{ fontSize: '16px', fontWeight: 800, color: '#B91C1C', mb: 2 }}>
+            <Typography sx={{ fontSize: '16px', fontWeight: 800, color: '#0B0F19', mb: 2 }}>
               1. Invoice Information
             </Typography>
 
@@ -764,16 +772,16 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
                     value={billNo}
                     disabled
                     sx={{
-                      backgroundColor: '#FEF2F2',
+                      backgroundColor: '#EFF6FF',
                       borderRadius: '6px',
                       '& .MuiInputBase-input': {
                         fontSize: '13.5px',
                         fontWeight: 800,
-                        color: '#B91C1C !important',
-                        WebkitTextFillColor: '#B91C1C !important',
+                        color: '#1D4ED8 !important',
+                        WebkitTextFillColor: '#1D4ED8 !important',
                       },
                       '& .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#FECACA !important',
+                        borderColor: '#BFDBFE !important',
                       },
                     }}
                   />
@@ -947,10 +955,10 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
                 <Divider sx={{ my: 1, borderColor: '#E2E8F0' }} />
 
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography sx={{ fontSize: '15px', fontWeight: 800, color: '#991B1B' }}>
+                  <Typography sx={{ fontSize: '15px', fontWeight: 800, color: '#0B0F19' }}>
                     Grand Total:
                   </Typography>
-                  <Typography sx={{ fontSize: '20px', fontWeight: 900, color: '#B91C1C' }}>
+                  <Typography sx={{ fontSize: '20px', fontWeight: 900, color: '#1D4ED8' }}>
                     ₹{grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </Typography>
                 </Box>
@@ -985,14 +993,15 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
                     disabled={savingBill || productRows.length === 0}
                     startIcon={savingBill ? <CircularProgress size={16} color="inherit" /> : <PrintOutlinedIcon />}
                     sx={{
-                      background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+                      background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
                       color: '#FFFFFF',
                       fontWeight: 800,
                       textTransform: 'none',
                       py: 1,
                       borderRadius: '8px',
-                      boxShadow: '0 2px 8px rgba(220, 38, 38, 0.3)',
-                      '&:hover': { background: 'linear-gradient(135deg, #B91C1C 0%, #991B1B 100%)' },
+                      border: '1.5px solid #FACC15',
+                      boxShadow: '0 2px 8px rgba(29, 78, 216, 0.3)',
+                      '&:hover': { background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' },
                     }}
                   >
                     {isEditMode ? 'Update & Print' : 'Save & Print'}
@@ -1027,12 +1036,12 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
                     onClick={handleClearDraft}
                     startIcon={<ClearRoundedIcon sx={{ fontSize: 16 }} />}
                     sx={{
-                      color: '#991B1B',
+                      color: '#64748B',
                       fontSize: '12px',
                       fontWeight: 600,
                       textTransform: 'none',
                       py: 0.4,
-                      '&:hover': { backgroundColor: '#FEF2F2' },
+                      '&:hover': { backgroundColor: '#F1F5F9', color: '#0B0F19' },
                     }}
                   >
                     Clear Current Draft Form
@@ -1059,14 +1068,14 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
             {/* Top Product Entry Bar */}
             <Box
               sx={{
-                background: 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)',
-                borderBottom: '2px solid #F59E0B',
+                background: 'linear-gradient(135deg, #0B0F19 0%, #111827 40%, #1E3A8A 100%)',
+                borderBottom: '2.5px solid #EAB308',
                 p: 2,
                 px: { xs: 2, sm: 2.5 },
                 color: '#FFFFFF',
               }}
             >
-              <Typography sx={{ fontSize: '15px', fontWeight: 800, letterSpacing: '-0.01em', mb: 1.5 }}>
+              <Typography sx={{ fontSize: '15px', fontWeight: 800, letterSpacing: '-0.01em', mb: 1.5, color: '#FFFFFF' }}>
                 2. Add Products from Price List
               </Typography>
 
@@ -1085,15 +1094,66 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
                       const valName = typeof val === 'string' ? val : val?.name;
                       return optName === valName;
                     }}
+                    filterOptions={(options, { inputValue }) => {
+                      const rawQ = (inputValue || '').trim().replace(/^#+/, '');
+                      if (!rawQ) return options;
+                      const q = rawQ.toLowerCase();
+                      const isNum = /^\d+$/.test(rawQ);
+
+                      if (isNum) {
+                        // Numeric search: ONLY search product code / slNo. NEVER match product name!
+                        const qNum = parseInt(rawQ, 10);
+                        const qPadded = rawQ.padStart(3, '0');
+                        return options
+                          .filter((opt) => {
+                            const codeStr = formatProductCode(opt.productCode || opt.slNo);
+                            if (!codeStr) return false;
+                            const optNum = parseInt(codeStr, 10);
+                            if (optNum === qNum || codeStr === rawQ || codeStr === qPadded) return true;
+                            if (rawQ.startsWith('0') && codeStr.startsWith(rawQ)) return true;
+                            return false;
+                          })
+                          .sort((a, b) => {
+                            const aNum = parseInt(formatProductCode(a.productCode || a.slNo), 10);
+                            const bNum = parseInt(formatProductCode(b.productCode || b.slNo), 10);
+                            if (aNum === qNum && bNum !== qNum) return -1;
+                            if (bNum === qNum && aNum !== qNum) return 1;
+                            return aNum - bNum;
+                          });
+                      }
+
+                      // Text search: search by product name or category
+                      return options.filter((opt) => {
+                        const nameMatch = (opt.name || '').toLowerCase().includes(q);
+                        const catMatch = (opt.category || '').toLowerCase().includes(q);
+                        return nameMatch || catMatch;
+                      });
+                    }}
                     value={productOptions.find((p) => p.name === selectedProduct) || (selectedProduct ? selectedProduct : null)}
                     onChange={(_, val) => {
                       if (val) {
                         if (typeof val === 'string') {
-                          setSelectedProduct(val);
-                          const matched = productOptions.find((p) => p.name.toLowerCase() === val.toLowerCase());
+                          const clean = val.trim().replace(/^#+/, '');
+                          const isNum = /^\d+$/.test(clean);
+                          let matched: ProductCatalogOption | undefined;
+                          if (isNum) {
+                            const qNum = parseInt(clean, 10);
+                            const qPadded = clean.padStart(3, '0');
+                            matched = productOptions.find((p) => {
+                              const codeStr = formatProductCode(p.productCode || p.slNo);
+                              const optNum = parseInt(codeStr, 10);
+                              return optNum === qNum || codeStr === clean || codeStr === qPadded;
+                            });
+                          } else {
+                            matched = productOptions.find((p) => p.name.toLowerCase() === clean.toLowerCase());
+                          }
+
                           if (matched) {
+                            setSelectedProduct(matched.name);
                             setRate(String(matched.rate || 0));
                             setUnit(matched.unit || 'Box');
+                          } else {
+                            setSelectedProduct(val);
                           }
                         } else {
                           setSelectedProduct(val.name);
@@ -1114,10 +1174,20 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
                     onInputChange={(_, newInputValue, reason) => {
                       if (reason === 'input') {
                         setSelectedProduct(newInputValue);
-                        const matched = productOptions.find((p) => p.name.toLowerCase() === newInputValue.trim().toLowerCase());
-                        if (matched) {
-                          setRate(String(matched.rate || 0));
-                          setUnit(matched.unit || 'Box');
+                        const clean = newInputValue.trim().replace(/^#+/, '');
+                        const isNum = /^\d+$/.test(clean);
+                        if (isNum) {
+                          const qNum = parseInt(clean, 10);
+                          const qPadded = clean.padStart(3, '0');
+                          const matched = productOptions.find((p) => {
+                            const codeStr = formatProductCode(p.productCode || p.slNo);
+                            const optNum = parseInt(codeStr, 10);
+                            return optNum === qNum || codeStr === clean || codeStr === qPadded;
+                          });
+                          if (matched) {
+                            setRate(String(matched.rate || 0));
+                            setUnit(matched.unit || 'Box');
+                          }
                         }
                       } else if (reason === 'clear') {
                         setSelectedProduct('');
@@ -1130,6 +1200,7 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
                       const optCategory = typeof option === 'string' ? undefined : option.category;
                       const optRate = typeof option === 'string' ? undefined : option.rate;
                       const optUnit = typeof option === 'string' ? undefined : option.unit;
+                      const optCode = typeof option === 'string' ? undefined : (option.productCode || option.slNo);
                       const optKey = key || (typeof option === 'string' ? option : option.id || option.name);
 
                       return (
@@ -1144,24 +1215,45 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
                             width: '100%',
                             py: 0.8,
                             px: 1.5,
-                            gap: 1,
+                            gap: 1.2,
                             borderBottom: '1px solid #F1F5F9',
                             '&:last-child': { borderBottom: 'none' },
                           }}
                         >
-                          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                            <Typography sx={{ fontSize: '13.5px', fontWeight: 700, color: '#1F1714' }}>
-                              {optName}
-                            </Typography>
-                            {optCategory && (
-                              <Typography sx={{ fontSize: '11px', color: '#D97706', fontWeight: 600 }}>
-                                {optCategory}
-                              </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2, minWidth: 0, flex: 1 }}>
+                            {optCode !== undefined && optCode !== '' && (
+                              <Box
+                                sx={{
+                                  backgroundColor: '#EFF6FF',
+                                  color: '#1D4ED8',
+                                  border: '1px solid #BFDBFE',
+                                  borderRadius: '6px',
+                                  fontSize: '11.5px',
+                                  fontWeight: 800,
+                                  px: 0.8,
+                                  py: 0.2,
+                                  minWidth: '34px',
+                                  textAlign: 'center',
+                                  flexShrink: 0,
+                                }}
+                              >
+                                {formatProductCode(optCode)}
+                              </Box>
                             )}
+                            <Box sx={{ minWidth: 0 }}>
+                              <Typography noWrap sx={{ fontSize: '13.5px', fontWeight: 700, color: '#1F1714' }}>
+                                {optName}
+                              </Typography>
+                              {optCategory && (
+                                <Typography sx={{ fontSize: '11px', color: '#D97706', fontWeight: 600 }}>
+                                  {optCategory}
+                                </Typography>
+                              )}
+                            </Box>
                           </Box>
                           <Box sx={{ textAlign: 'right', flexShrink: 0 }}>
                             {optRate !== undefined && optRate > 0 && (
-                              <Typography sx={{ fontSize: '13px', fontWeight: 800, color: '#B91C1C' }}>
+                              <Typography sx={{ fontSize: '13px', fontWeight: 800, color: '#1D4ED8' }}>
                                 ₹{Number(optRate).toLocaleString('en-IN')}
                               </Typography>
                             )}
@@ -1177,7 +1269,50 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        placeholder="Search product from price list..."
+                        placeholder="Search Product Code (e.g. 001, 012) or Name..."
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            const clean = selectedProduct.trim().replace(/^#+/, '');
+                            const isNum = /^\d+$/.test(clean);
+                            let matched: ProductCatalogOption | undefined;
+                            if (isNum) {
+                              const qNum = parseInt(clean, 10);
+                              const qPadded = clean.padStart(3, '0');
+                              matched = productOptions.find((p) => {
+                                const codeStr = formatProductCode(p.productCode || p.slNo);
+                                const optNum = parseInt(codeStr, 10);
+                                return optNum === qNum || codeStr === clean || codeStr === qPadded;
+                              });
+                            } else {
+                              matched = productOptions.find((p) => p.name.toLowerCase() === clean.toLowerCase());
+                            }
+                            if (matched) {
+                              e.preventDefault();
+                              setSelectedProduct(matched.name);
+                              setRate(String(matched.rate || 0));
+                              setUnit(matched.unit || 'Box');
+                            }
+                          }
+                        }}
+                        onBlur={() => {
+                          const clean = selectedProduct.trim().replace(/^#+/, '');
+                          if (!clean) return;
+                          const isNum = /^\d+$/.test(clean);
+                          if (isNum) {
+                            const qNum = parseInt(clean, 10);
+                            const qPadded = clean.padStart(3, '0');
+                            const matched = productOptions.find((p) => {
+                              const codeStr = formatProductCode(p.productCode || p.slNo);
+                              const optNum = parseInt(codeStr, 10);
+                              return optNum === qNum || codeStr === clean || codeStr === qPadded;
+                            });
+                            if (matched) {
+                              setSelectedProduct(matched.name);
+                              setRate(String(matched.rate || 0));
+                              setUnit(matched.unit || 'Box');
+                            }
+                          }
+                        }}
                         sx={{
                           backgroundColor: '#FFFFFF',
                           borderRadius: '6px',
@@ -1232,7 +1367,7 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
                     sx={{
                       backgroundColor: '#FFFFFF',
                       borderRadius: '6px',
-                      '& .MuiInputBase-input': { fontSize: '13px', fontWeight: 800, color: '#B91C1C' },
+                      '& .MuiInputBase-input': { fontSize: '13px', fontWeight: 800, color: '#1D4ED8' },
                     }}
                   />
                 </Grid>
@@ -1246,16 +1381,16 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
                     onClick={handleAddProductItem}
                     startIcon={<AddRoundedIcon sx={{ fontSize: 18 }} />}
                     sx={{
-                      backgroundColor: '#FFFFFF',
-                      color: '#B91C1C',
-                      border: '1.5px solid #E2E8F0',
+                      backgroundColor: '#FACC15',
+                      color: '#0B0F19',
+                      border: '1.5px solid #EAB308',
                       fontWeight: 800,
                       fontSize: '13px',
                       textTransform: 'none',
                       height: '38px',
                       borderRadius: '6px',
-                      boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-                      '&:hover': { backgroundColor: '#F8FAFC' },
+                      boxShadow: '0 2px 8px rgba(234, 179, 8, 0.3)',
+                      '&:hover': { backgroundColor: '#EAB308' },
                     }}
                   >
                     Add Item
@@ -1306,7 +1441,7 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
                     </TableRow>
                   ) : (
                     productRows.map((row, idx) => (
-                      <TableRow key={row.id} sx={{ '&:hover': { backgroundColor: '#FEFDF5' } }}>
+                      <TableRow key={row.id} sx={{ '&:hover': { backgroundColor: '#F8FAFC' } }}>
                         <TableCell sx={{ fontSize: '13px', fontWeight: 700, color: '#64748B' }}>
                           {idx + 1}
                         </TableCell>
@@ -1331,7 +1466,7 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
                                 border: '1px solid #CBD5E1',
                                 borderRadius: '4px',
                                 color: '#64748B',
-                                '&:hover': { backgroundColor: '#FEF2F2', color: '#B91C1C', borderColor: '#FCA5A5' },
+                                '&:hover': { backgroundColor: '#EFF6FF', color: '#1D4ED8', borderColor: '#BFDBFE' },
                               }}
                             >
                               <RemoveRoundedIcon sx={{ fontSize: 13 }} />
@@ -1352,8 +1487,8 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
                                 backgroundColor: '#FFFFFF',
                                 borderRadius: '6px',
                                 '& .MuiOutlinedInput-notchedOutline': { borderColor: '#CBD5E1' },
-                                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#B91C1C' },
-                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#B91C1C' },
+                                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#1D4ED8' },
+                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1D4ED8' },
                               }}
                             />
                             <IconButton
@@ -1391,19 +1526,19 @@ export const ParticularsPage: FC<ParticularsPageProps> = ({ initialCustomerName,
                               backgroundColor: '#FFFFFF',
                               borderRadius: '6px',
                               '& .MuiOutlinedInput-notchedOutline': { borderColor: '#CBD5E1' },
-                              '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#B91C1C' },
-                              '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#B91C1C' },
+                              '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#1D4ED8' },
+                              '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1D4ED8' },
                             }}
                           />
                         </TableCell>
-                        <TableCell align="right" sx={{ fontSize: '14px', fontWeight: 800, color: '#B91C1C' }}>
+                        <TableCell align="right" sx={{ fontSize: '14px', fontWeight: 800, color: '#1D4ED8' }}>
                           ₹{Number(row.amount || 0).toFixed(2)}
                         </TableCell>
                         <TableCell align="center">
                           <IconButton
                             size="small"
                             onClick={() => handleDeleteRow(row.id)}
-                            sx={{ color: '#DC2626', p: 0.5, '&:hover': { backgroundColor: '#FEF2F2' } }}
+                            sx={{ color: '#64748B', p: 0.5, '&:hover': { color: '#B45309', backgroundColor: '#FEF3C7' } }}
                           >
                             <DeleteOutlineRoundedIcon sx={{ fontSize: 16 }} />
                           </IconButton>

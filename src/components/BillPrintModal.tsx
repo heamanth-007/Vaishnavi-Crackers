@@ -136,16 +136,16 @@ export const BillPrintModal: React.FC<BillPrintModalProps> = ({ open, onClose, b
             justifyContent: 'space-between',
             px: 3,
             py: 1.8,
-            background: 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)',
-            borderBottom: '1px solid #E2E8F0',
+            background: 'linear-gradient(135deg, #0B0F19 0%, #111827 40%, #1E3A8A 100%)',
+            borderBottom: '2.5px solid #EAB308',
             color: '#FFFFFF',
           }}
         >
           <Box>
-            <Typography sx={{ fontSize: '16px', fontWeight: 800, letterSpacing: '-0.01em' }}>
+            <Typography sx={{ fontSize: '16px', fontWeight: 800, letterSpacing: '-0.01em', color: '#FFFFFF' }}>
               Bill Preview - #{bill.billNo || 'New'}
             </Typography>
-            <Typography sx={{ fontSize: '12px', color: '#FEE2E2', fontWeight: 500 }}>
+            <Typography sx={{ fontSize: '12px', color: '#FACC15', fontWeight: 600 }}>
               {bill.customerName} | {bill.companyName}
             </Typography>
           </Box>
@@ -154,11 +154,11 @@ export const BillPrintModal: React.FC<BillPrintModalProps> = ({ open, onClose, b
               variant="contained"
               disableElevation
               onClick={handleTriggerPrint}
-              startIcon={<PrintOutlinedIcon sx={{ fontSize: '18px !important', color: '#DC2626' }} />}
+              startIcon={<PrintOutlinedIcon sx={{ fontSize: '18px !important', color: '#0B0F19' }} />}
               sx={{
-                backgroundColor: '#FFFFFF',
-                color: '#DC2626',
-                border: '1px solid #E2E8F0',
+                backgroundColor: '#FACC15',
+                color: '#0B0F19',
+                border: '1.5px solid #EAB308',
                 fontSize: '13px',
                 fontWeight: 700,
                 textTransform: 'none',
@@ -166,7 +166,7 @@ export const BillPrintModal: React.FC<BillPrintModalProps> = ({ open, onClose, b
                 py: 0.6,
                 borderRadius: '6px',
                 '&:hover': {
-                  backgroundColor: '#F8FAFC',
+                  backgroundColor: '#EAB308',
                 },
               }}
             >
@@ -247,13 +247,13 @@ export const BillPrintModal: React.FC<BillPrintModalProps> = ({ open, onClose, b
               disabled={downloading || sharing}
               startIcon={downloading ? <CircularProgress size={16} color="inherit" /> : <PictureAsPdfRoundedIcon />}
               sx={{
-                color: '#DC2626',
-                borderColor: '#FCA5A5',
+                color: '#1D4ED8',
+                borderColor: '#93C5FD',
                 px: 2,
                 py: 1,
                 fontWeight: 700,
                 width: { xs: '100%', sm: 'auto' },
-                '&:hover': { backgroundColor: '#FEF2F2', borderColor: '#DC2626' },
+                '&:hover': { backgroundColor: '#EFF6FF', borderColor: '#1D4ED8' },
               }}
             >
               {downloading ? 'Creating PDF...' : 'Download PDF'}
@@ -284,7 +284,7 @@ export const BillPrintModal: React.FC<BillPrintModalProps> = ({ open, onClose, b
               onClick={handleTriggerPrint}
               startIcon={<PrintOutlinedIcon sx={{ fontSize: '18px !important' }} />}
               sx={{
-                background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+                background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
                 color: '#FFFFFF',
                 fontSize: '13px',
                 fontWeight: 700,
@@ -292,10 +292,11 @@ export const BillPrintModal: React.FC<BillPrintModalProps> = ({ open, onClose, b
                 px: 2.5,
                 py: 1.1,
                 borderRadius: '6px',
-                boxShadow: '0 2px 8px rgba(220, 38, 38, 0.3)',
+                border: '1.5px solid #FACC15',
+                boxShadow: '0 2px 8px rgba(29, 78, 216, 0.3)',
                 width: { xs: '100%', sm: 'auto' },
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #B91C1C 0%, #991B1B 100%)',
+                  background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
                 },
               }}
             >
