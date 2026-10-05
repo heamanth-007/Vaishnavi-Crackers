@@ -9,7 +9,7 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: process.env.VITE_BACKEND_TARGET || 'http://localhost:5015',
+        target: process.env.VITE_BACKEND_TARGET || 'http://127.0.0.1:5015',
         changeOrigin: true,
         secure: false,
       },

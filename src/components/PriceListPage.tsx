@@ -87,6 +87,7 @@ export const PriceListPage: FC = () => {
   const [items, setItems] = useState<PriceItem[]>([]);
   const [categories, setCategories] = useState<{ name: string; color?: string }[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [activeViewMode, setActiveViewMode] = useState<'table' | 'documents'>('table');
@@ -176,6 +177,7 @@ export const PriceListPage: FC = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
+      setFetchError(null);
       const [priceData, catData, prodsData] = await Promise.all([
         PriceListsApi.getAll(),
         CategoriesApi.getAll().catch(() => []),
@@ -202,8 +204,9 @@ export const PriceListPage: FC = () => {
       if (Array.isArray(catData) && catData.length > 0) {
         setCategories(catData.map((c) => ({ name: c.name, color: c.color })));
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to load price list data:', err);
+      setFetchError(err.message || 'Unable to connect to backend server on port 5015.');
     } finally {
       setLoading(false);
     }
@@ -1963,6 +1966,21 @@ export const PriceListPage: FC = () => {
               )}
             </Box>
           </Box>
+
+          {/* Connection Error Banner */}
+          {fetchError && (
+            <Alert
+              severity="error"
+              action={
+                <Button color="inherit" size="small" onClick={fetchData} sx={{ fontWeight: 800, textTransform: 'none' }}>
+                  Retry / மீண்டும் முயற்சி செய்
+                </Button>
+              }
+              sx={{ m: 2, borderRadius: '8px', fontWeight: 600, fontSize: '13px' }}
+            >
+              ⚠️ Backend Server (Port 5015) அல்லது Database-உடன் இணைய முடியவில்லை ({fetchError}). Server இயங்குகிறதா என சரிபார்க்கவும்.
+            </Alert>
+          )}
 
           {/* Price List Table with explicit vertical scroll height */}
           <TableContainer
