@@ -1,5 +1,4 @@
 import React from 'react';
-import defaultGaneshaLogo from '../assets/ganesha.jpg';
 import defaultBrandLogo from '../assets/logo.png';
 import { getStoredSettings } from './SettingsPage';
 import { numberToIndianWords } from '../utils/numberToWords';
@@ -272,7 +271,7 @@ export const BillPrintTemplate: React.FC<BillPrintTemplateProps> = ({ bill, copy
           justifyContent: 'space-between',
         }}
       >
-        {/* Header: Ganesha (Left) | Title & Address (Center) | Vaishnavi Logo (Right) */}
+        {/* Header: Brand Logo (Left) | Title & Address (Center) | Balance Spacer (Right) */}
         <div
           style={{
             display: 'flex',
@@ -282,14 +281,14 @@ export const BillPrintTemplate: React.FC<BillPrintTemplateProps> = ({ bill, copy
             borderBottom: '1.5px solid #000000',
           }}
         >
-          {/* Left: Lord Ganesha */}
-          <div style={{ width: '75px', textAlign: 'center', flexShrink: 0 }}>
+          {/* Left: Company / Brand Logo */}
+          <div style={{ width: '85px', textAlign: 'center', flexShrink: 0 }}>
             <img
-              src={defaultGaneshaLogo}
-              alt="Ganesha"
+              src={storeSettings.logoUrl || defaultBrandLogo}
+              alt="Logo"
               style={{
                 maxHeight: '68px',
-                maxWidth: '72px',
+                maxWidth: '85px',
                 objectFit: 'contain',
                 display: 'block',
                 margin: '0 auto',
@@ -343,20 +342,8 @@ export const BillPrintTemplate: React.FC<BillPrintTemplateProps> = ({ bill, copy
             ) : null}
           </div>
 
-          {/* Right: Vaishnavi Crackers Logo */}
-          <div style={{ width: '85px', textAlign: 'center', flexShrink: 0 }}>
-            <img
-              src={storeSettings.logoUrl || defaultBrandLogo}
-              alt="Vaishnavi Crackers"
-              style={{
-                maxHeight: '68px',
-                maxWidth: '85px',
-                objectFit: 'contain',
-                display: 'block',
-                margin: '0 auto',
-              }}
-            />
-          </div>
+          {/* Right: Balanced Empty Spacer */}
+          <div style={{ width: '85px', flexShrink: 0 }} />
         </div>
 
         {/* 3-Column Section: To (Left) | Delivery To Details (Middle) | Invoice Meta (Right) */}
